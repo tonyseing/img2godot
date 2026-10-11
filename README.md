@@ -1,638 +1,94 @@
-<div align="center">
+# img2godot
 
-<img src="assets/logo.svg" width="112" height="104" alt="img2threejs logo" />
+**Modified by the img2godot fork for Blender/Godot**, from img2threejs revision
+`d508b596cb221f1509f6e50ab68fce275a5cfb44` (Apache-2.0, Copyright 2026 hoainho).
+The Blender/Godot route is this fork's implementation, not a claim of upstream support. Replacing the workflow
+does not itself prove improved fidelity; that claim requires inspected real reference/output comparison.
 
-# img2threejs
+Agent-driven **approved 2D image → semantic/detail analysis → asset-specific Blender authorship → textured GLB → Godot acceptance**. This standalone fork replaces the active 3D reconstruction workflow; it is not an extra review wrapper around previously generated models. It is not a pretrained image-to-mesh model, hosted reconstruction API, or Meshy client.
 
-**Rebuild the object in a reference image as a code-only, procedural Three.js model.**
+The skill retains the canonical name `game-asset-3d-pipeline`. Read [SKILL.md](SKILL.md) for the complete workflow, specification fields, generated-texture restrictions and artistic approval rules.
 
-Quality-gated, animation-ready, and deliberately token-efficient — reconstruction-by-code, not photogrammetry, mesh extraction, or downloaded art packs.
+## Provenance and pinning
 
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-2.0.0-green.svg)](CHANGELOG.md)
-[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![Runtime](https://img.shields.io/badge/runtime-Three.js-000000.svg)](https://threejs.org)
-[![Tooling](https://img.shields.io/badge/tooling-Python%203.10%2B%20stdlib-3776ab.svg)](forge)
-[![Sponsor](https://img.shields.io/badge/Sponsor-Ko--fi-FF5E5B.svg?logo=kofi&logoColor=white)](https://ko-fi.com/iamnick)
-[![Scripts](https://img.shields.io/badge/scripts-forge%20%2F%20scripts-3776ab.svg)](scripts)
-[![Sponsored by Atlas Cloud](https://img.shields.io/badge/Sponsored%20by-Atlas%20Cloud-000000.svg?labelColor=1a1a1a&logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4NDUuOTUgNzkyIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNNzEyLjA1LDU5NC4zTDQyMi45OCwxNS40NiwxMzMuOSw1OTQuM2wtOTEuMDEsMTgyLjI1YzU3LjE4LTM0LjU1LDExOS40OS02MS40LDE4NS40NC03OS40NSw2Mi4wMi0xNi45NywxMjcuMjQtMjYuMjEsMTk0LjY1LTI2LjIxLDM0LjY5LDAsNjguNzksMi40OSwxMDIuMTksNy4xOGwtNjUuNzItMTQxLjc2Yy0xOC42MS0zLjIzLTEwMS4yOC0zLjIzLTE2MS44Myw5Ljg0bDEyNS4zNi0yNzMuMTYsMTk0LjY1LDQyNC4xMmMuMzUuMS42OS4yMSwxLjAzLjMsNjUuNTcsMTguMDQsMTI3LjUzLDQ0Ljc4LDE4NC40MSw3OS4xNGwtOTEuMDEtMTgyLjI1WiIvPjwvc3ZnPg%3D%3D)](https://www.atlascloud.ai/console/coding-plan)
-[![Sponsored by Tripo](https://img.shields.io/badge/Sponsored%20by-Tripo-000000.svg?labelColor=1a1a1a&logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBmaWxsPSIjZmFjZTAwIiBkPSJNMTIuNjYxIDQuNzUyYS4wNC4wNCAwIDAwLS4wMTMtLjA1NS4wMzguMDM4IDAgMDAtLjAyLS4wMDVINi40OTZhLjE5LjE5IDAgMDEtLjE2NS0uMDkyTDQuMjQ1IDEuMDUyYS4wMzQuMDM0IDAgMDEuMDE0LS4wNDdBLjAzOC4wMzggMCAwMTQuMjc1IDFjNS40OTIgMCAxMC43MzMgMCAxNS43MjEuMDAyIDIuMDg5IDAgMy42OTkgMS41NCA0LjAwMyAzLjU5OC4wMDguMDYyLS4wMTkuMDkyLS4wOC4wOTJoLTYuNjdhLjIwNC4yMDQgMCAwMC0uMTc0LjFjLTEuNDE0IDIuNDEtMi44MiA0LjgwMy00LjIxOCA3LjE3OC0uMjguNDcyLS45Mi42Mi0xLjM3My4zNDItLjE5LS4xMTYtLjM1Ny0uMzA0LS41MDItLjU2MWEzNy45MTcgMzcuOTE3IDAgMDAtLjg4Mi0xLjQ4OWMtLjIyMi0uMzU2LS4yMzQtLjcwNy0uMDM1LTEuMDUyYTY2MS43NyA2NjEuNzcgMCAwMTIuNTk3LTQuNDZ2LjAwMnoiLz48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMTAuNzcyIDE2Ljk4NmMuNTcuOTcyIDEuOTM1LjkxNiAyLjQ4OS0uMDI4TDE5IDcuMTY0YS4xMjcuMTI3IDAgMDEuMTE2LS4wNjdoNC4yM2MuMDE3IDAgLjAzLjAxNC4wMjguMDMgMCAuMDA1LS4wMDEuMDEtLjAwMy4wMTMtMi42MDUgNC40MzItNS4yMzIgOC45MDYtNy44OCAxMy40Mi0xLjI4MyAyLjE5MS00LjI3OCAyLjUxNy02LjE3OS45NDctLjMwOC0uMjU0LS42NjUtLjcyNy0xLjA2OS0xLjQxNy0yLjUyNS00LjMyNC01LjA5OC04LjcxLTcuNzItMTMuMTYyLTEuMDYzLTEuODAzLS40MjQtMy45NDcgMS4xOS01LjIuMDUzLS4wNDEuMDk1LS4wMzMuMTI5LjAyMyAyLjkwNSA0Ljk1IDUuODgyIDEwLjAyOSA4LjkzIDE1LjIzNnoiLz48L3N2Zz4%3D)](https://www.tripo3d.ai/)
-[![Sponsored by Hyper3D](https://img.shields.io/badge/Sponsored%20by-Hyper3D-000000.svg?labelColor=1a1a1a&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAADlElEQVRYCeWWbWiOURjH9wzDZoYs5i3aF%2FEBiTYZRQ35qGxS%2B2AoFNoHRcl7vlETGcWX1aLkLbKsJTNiXmpKpExt5v2lGWNte%2Fz%2Bd%2Ff9dO6z57mfe08p5arfc851netc57rP23PS0v53iYSZgGg0Ogy%2F5VACU%2BAnnIlEIjWUf1cYvAgaIZ7sxxjqI1LKkuCb4Ue8kV1bB%2BXElIIn60TgLdDnDhRULEsWa8DtjKZp7woa1W37TTljwAMEdSBgFjS5AyQrzuOQ7jKCcnBQ7FBtBCmHZPIdh0oYpaCUObATnoCS3wPzwwzo28F0GkKnezDX7fyJ8gF8hT54Bc3wmCP4mtIn9C%2FCcBbyoQv2QSW%2BqicXAhRAL7yFU3AI6uEoTE8ewZmNqfg%2BB8kL0FFdEqavpnI9qPNe0HRKdkOGHQBbBIbbdunYi6EbfsER%2BAC6yBILDgqoo3cavBOwPXEPZyDNWNxjiP0iSA6CTks7zAyKp8xLwBv8ZKCz24j%2FMVhj%2B2JbCRItoy4syW0YavvGdBovywvRHpgcawio4LcBWmG06YaeB7pFlUAneFJm%2BqWbCvWXrn6FndtqtSVSJ9GgPTLecviG3gDZYH71VjLRn5sjdgKNrv2CWwYWBNItOBZqYZ7l3IN%2BHyaAeUHNQS8AR8wGGe6AvlznP64w6FIaRrosoNTAs6AOTNGXt8Em00hdH10It8CXWRrT%2FpEBTmA3p0x%2BppSj2JtOF403e56vlmA25HoGo1TijtgzIONxiK2R4%2BX%2F6fWrjnaO3xbLnoduJ%2Bq55HgVew%2FIHoUMZiLTc7JKe3Y09TuYPV3VpixE8Z0Ms9Grx2aAAZWMprcCpsEzbFUErqJuyk0Ubbz3oMFr8NETzZagS6fddtYltBbiyeF%2BziEMBCqNF8y1lfpCYNQ1fDegw0batPNDCb6ZkAstYMsjDP6lwaA1b7Y9DV033S5YB1mJsqAtGyrAeSVRFkIj6CbUdVwH%2BWb%2F2HuAhus0rDAbrXotus61LhKt%2FTX4DBLNjv7tVkE9bGNfaDNrabW3dBx74Klnp%2B4XHBeD%2FrWCpJpGvRNMP%2FPh%2BoC20EvlzwCNzmVg%2FnGg9pOHWA7AJdDSeHKVyoCf6LEl8LIhiN5yekoVQ7x7Qq468w2gP68meAc3mN5uygFJvwS83iSyiPpqUELjYAwooU7QgG%2BgGjTwF8qUJGECZjSS0bWqy2cQdEBbKl9Lv39P%2FgAQ2ul5m76dAQAAAABJRU5ErkJggg%3D%3D)](https://hyper3d.ai/)
+Fork: https://github.com/tonyseing/img2godot. Upstream: https://github.com/img2threejs/img2threejs at **`d508b596cb221f1509f6e50ab68fce275a5cfb44`**. Upstream copyright: **Copyright 2026 hoainho**, Apache-2.0; [LICENSE](LICENSE) is retained. [PROVENANCE.json](PROVENANCE.json) identifies the base and modifications. The base hash is not the modified fork deployment revision: pin the verified fork commit when deploying, and retain the installer's resource hash inventory.
 
-<table align="center">
-  <tr>
-    <td align="center"></td>
-    <td align="center"><sub><b>DAILY</b></sub></td>
-    <td align="center"><sub><b>WEEKLY</b></sub></td>
-  </tr>
-  <tr>
-    <td align="right"><sub><b>Python</b></sub></td>
-    <td><a href="https://trendshift.io/repositories/83608?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-83608" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/83608/daily?language=Python" alt="hoainho%2Fimg2threejs | Trendshift" width="250" height="55"/></a></td>
-    <td><a href="https://trendshift.io/repositories/83608?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-83608" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/83608/weekly?language=Python" alt="img2threejs%2Fimg2threejs | Trendshift" width="250" height="55"/></a></td>
-  </tr>
-  <tr>
-    <td align="right"><sub><b>All languages</b></sub></td>
-    <td><a href="https://trendshift.io/repositories/83608?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-83608" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/83608/daily" alt="img2threejs%2Fimg2threejs | Trendshift" width="250" height="55"/></a></td>
-    <td><a href="https://trendshift.io/repositories/83608?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-83608" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/83608/weekly" alt="img2threejs%2Fimg2threejs | Trendshift" width="250" height="55"/></a></td>
-  </tr>
-</table>
+The upstream `forge` helpers, `grimoire`, historical TypeScript/Three.js tools, integrations, package CLI and documentation remain in the repository for attribution/reference. They are **not** the Godot default quickstart or required runtime. No default entrypoint below invokes the legacy Three.js pipeline, environment generators or Meshy. Upstream material advice does not override this fork's generated-source-only texture policy.
 
-</div>
+**Supported img2godot installation is `python3 install.py` only.** Retained `package.json` metadata,
+`bin/img2threejs.mjs` and `npx img2threejs` belong to the historical upstream development/distribution surface:
+their installer targets upstream img2threejs, not this Blender/Godot skill. Do not use them to deploy img2godot.
+Their retained presence is not an img2godot npm release or a compatibility shim.
 
-*Reference images reconstructed in code as animation-ready Three.js models, running live in the browser.*
+## Install the canonical skill
 
-### [→ Open the Live Demo Gallery](https://img2threejs.io/)
+Prerequisites: Python 3, Pillow (image probing), Blender and the actual target Godot engine(s). A configured coding agent supplies image understanding and authorship. It must be able to open the reference and capture PNGs. There is no reconstruction service API key. The product's activation-suppressed `tools/godot-window.mjs` launcher supplies real phone/tablet capture; a standalone user must provide an equivalent supported launcher, not a foreground fallback.
 
-Every model in the gallery is generated code, running in your browser. No mesh files, no downloads.
-
----
-
-## Live demos
-
-Reconstructions built entirely from primitives, procedural shaders, and generated geometry. Open any model to orbit it, inspect its reference, and read the generated source.
-
-| Demo | Subject | Built with | View | Source |
-| --- | --- | --- | --- | --- |
-| Dual-Sword Warrior — TypeScript procedural surfaces ⚠︎ | character | `v1.5.1` | [Live](https://img2threejs.io/#/demo/girl-character) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/girl-character/createGirlCharacterModel.ts) |
-| Low-Poly Humanoid — Rigged Character ⚠︎ | character | `v1.5.0` | [Live](https://img2threejs.io/#/demo/low-poly-humanoid) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/low-poly-humanoid/createLowPolyHumanoidModel.ts) |
-| ★ Talon Knife \| Doppler Ruby (Factory New) | object | `v1.4.4` | [Live](https://img2threejs.io/#/demo/talon-doppler-ruby) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/talon-doppler-ruby/createTalonDopplerRubyModel.ts) |
-| AWP \| Medusa (Minimal Wear) · V2 rebuild | object | `V2` | [Live](https://img2threejs.io/#/demo/awp-medusa-v2) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/awp-medusa-v2/createAwpMedusaModelV2.ts) |
-| Pikachu 10K Star Celebration ⚠︎ | character | `v1.5-beta` | [Live](https://img2threejs.io/#/demo/electric-mouse-mascot) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/electric-mouse-mascot/createElectricMouseMascotModel.ts) |
-| Glock-18 \| Ghost Protocol (Well-Worn) | object | `v1.4.1` | [Live](https://img2threejs.io/#/demo/glock-ghost-protocol) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/glock-ghost-protocol/createGlockGhostProtocolModel.ts) |
-| Classic Knife \| Fade (Minimal Wear) | object | `v1.3` | [Live](https://img2threejs.io/#/demo/classic-fade) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/classic-fade/createClassicFadeModel.ts) |
-| BMX Endurance Bike | object | `v1.3` | [Live](https://img2threejs.io/#/demo/bmx-endurance) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/bmx-endurance/createBmxEnduranceBikeModel.ts) |
-| M9 Bayonet \| Doppler Phase 2 | object | `v1.3` | [Live](https://img2threejs.io/#/demo/m9-doppler) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/m9-doppler/createM9DopplerModel.ts) |
-| Sony WF-1000XM3 Earbuds + Case | object | `v1.2` | [Live](https://img2threejs.io/#/demo/sony-wf1000xm3) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/sony-wf1000xm3/createSonyWf1000xm3Model.ts) |
-| ISSACA 12 Gauge Shotgun | object | `v1.2` | [Live](https://img2threejs.io/#/demo/issaca-shotgun) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/issaca-shotgun/createIssacaShotgunModel.ts) |
-| Gerber Paracord Knife | object | `v1.2` | [Live](https://img2threejs.io/#/demo/gerber-knife) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/gerber-knife/createGerberKnifeModel.ts) |
-| Doraemon House (isometric diorama) | object | `v1.2` | [Live](https://img2threejs.io/#/demo/doraemon-house) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/doraemon-house/createDoraemonHouseModel.ts) |
-| War-Hauler "SECTOR 07" | object | `v1.2` | [Live](https://img2threejs.io/#/demo/warhauler) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/warhauler/createWarHaulerModel.ts) |
-| Crowned Loot Chest ⚠︎ | object | `v1.2` | [Live](https://img2threejs.io/#/demo/crown-chest) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/crown-chest/createCrownChestModel.ts) |
-
-⚠︎ marks a demo whose registry `status` is still `placeholder` rather than `final` — it renders, but it
-is not finished work. The **Built with** column is the version each demo's own registry entry records in
-`generatedWith`, not an inference from dates; `awp-medusa-v2` records `V2`, which is that demo's rebuild
-pass rather than a release number. Rows are ordered newest first by the commit that added the demo.
-
-The gallery source lives in [img2threejs/img2threejs-showcase](https://github.com/img2threejs/img2threejs-showcase). If this project is useful, a star on this repo helps others find it.
-
----
-
-## What it does
-
-You give it one reference image of an object. It produces a `THREE.Group` factory written in TypeScript that recreates that object from primitives, procedural shaders, and generated geometry — with a runtime hierarchy (pivots, sockets, colliders) so the result is ready to animate, not an inert lump.
-
-It runs under Claude Code, Codex, or OpenCode. It is agent-agnostic: wherever the docs say "agent vision" or "agent browser tool", it uses whatever the host provides — native image reading, a browser MCP, the project preview, or a user-supplied screenshot.
-
-### Subjects and detail accuracy
-
-- **Objects and characters.** Each subject is classified `object`, `character`, or `hybrid`. Objects follow the hard-surface pipeline; characters route through an anatomy-aware track (head-unit proportions, facial landmarks, pose) documented in `grimoire/character/reconstruction.md`.
-- **Detail-first analysis.** Before code generation the pipeline enumerates a `detailInventory` of identity-defining small details (gloss, bevel/rounding, screws/rivets, engraved or painted linework, contours, stains and wear). Every detail must map to a real component or material entry, and a strict-quality gate blocks generation until the inventory is complete. Taxonomy: `grimoire/intake/detail_inventory.md`.
-- **Maximum likeness for a specific person or character.** An opt-in projection-first path fits a parametric template to image landmarks, de-lights the photo, camera-matches the render, and projects the reference onto the mesh. A single image cannot guarantee 100 percent likeness, so the pipeline reports per-region confidence and asks for more views when it matters. Details: `grimoire/character/likeness_maximization.md`.
-- **Multi-view silhouette carving.** An opt-in `geometryDescriptor.visualHull` intersects at least two deterministic orthographic binary silhouettes into a bounded, welded voxel mesh. It records unseen areas as low-confidence rather than inventing hidden detail. Schema and runtime check: `grimoire/scripts.md`.
-- **CS2 weapon review gates.** Knife and Glock-18 routes use family-specific component contracts. The review records exactness tier, family identity, painted-region and projection coverage, per-region confidence, approximation notes, and versioned review-scene metadata; component-coverage and map-stripped blockout gates prevent a convincing texture from standing in for real structure. Ships with the CS2 domain plugin; see its `docs/cs2/review-gates.md`.
-- **Resumable local workflow.** `forge/state.py` records an ordered, evidence-backed intake/pass checklist for the generic profile and every registered domain (in-repo `character`, plus installed domain plugins such as CS2 and `animated-character` from plugin-character). `forge/next.py --state` resumes from that checklist while the existing spec, render, and review gates remain authoritative.
-- **Material reference pipeline.** Every visible material region can be cropped, analyzed, resolved against the versioned Three.js material registry, fitted into `ObjectSculptSpec`, rendered from controlled camera views, and accepted only after a per-region comparison gate. See [`docs/materials/README.md`](docs/materials/README.md).
-- **Python-assisted browser rendering.** Python may orchestrate camera batches, hashes, manifests, and deterministic diagnostics, but the target browser Three.js route remains the rendering authority. See [`grimoire/build/python_threejs_render_bridge.md`](grimoire/build/python_threejs_render_bridge.md).
-
----
-
-## How it works
-
-A staged sculpting pipeline turns the reference image into a spec, then generates and vision-reviews one build pass at a time — `blockout → structural → form → material → surface → lighting → interaction → optimization` — self-correcting until every identity-defining feature clears its threshold.
-
-**→ Full pipeline diagram, gates, self-correction logic, and the token-efficiency design: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**
-A staged sculpting pipeline turns the reference image into a spec, then generates and vision-reviews one build pass at a time — `blockout → structural → form → material → surface → lighting → interaction → optimization` — self-correcting until every identity-defining feature clears its threshold. Deterministic Python scripts handle validation and gating; model tokens are spent only on visual judgment and code.
-
-**→ Full pipeline diagram, gates, self-correction logic, script reference, and the token-efficiency design: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**
-
----
-
-## Quick start
-
-### Which project and CLI do I need?
-
-| Project | Role | CLI |
-|---|---|---|
-| **[img2threejs](https://github.com/img2threejs/img2threejs)** — this repository | Base reconstruction skill, procedural Three.js pipeline, scripts and quality gates | `npx --yes img2threejs@latest <command>` |
-| **[img2](https://github.com/img2threejs/img2)** | Optional plugin harness: catalog, registry, host links and capability lookup | `npx --yes @img2threejs/img2@latest <command>` |
-| **Domain and output plugins** — linked below | Additional workflows, domain rules or explicitly selected output routes | Install through `img2 add <plugin-id>` |
-
-The two CLIs are separate packages with independent versions. Installing the harness does
-**not** install this base skill; adding a plugin does **not** generate a model.
-Start with the base skill. Add the harness only when you need plugins.
-
-### 1. Install the base skill
-
-The CLI needs **Node.js ≥ 18 and Git**; the reconstruction scripts need **Python ≥ 3.10**.
-Configure your agent host first. The base installer detects Hermes, Claude Code, Codex and
-OpenCode; the plugin harness currently integrates with Claude Code, Codex and OpenCode.
-
-Preview, install into all detected hosts, then inspect their base-skill links:
+Clone the standalone fork at the verified deployment tag `godot-pipeline-2026-10-11`, then install:
 
 ```bash
-npx --yes img2threejs@latest install --dry-run
-npx --yes img2threejs@latest install
-npx --yes img2threejs@latest doctor
+git clone --branch godot-pipeline-2026-10-11 --single-branch https://github.com/tonyseing/img2godot.git ~/.img2godot/repo
+python3 ~/.img2godot/repo/install.py
 ```
 
-To install into just one detected host instead, use:
+The installer copies the fork skill/resources to `~/.agents/skills/game-asset-3d-pipeline`. It never creates a second discoverable alias or invokes the retired workflow. Before replacement it moves recognized existing contents to **`~/.agents/skill-backups/`**, outside skill discovery. It recognizes the pinned legacy skill SHA-256 or an unmodified prior img2godot resource inventory; unrelated/modified directories and symlinks are refused. It stages the replacement first and restores the displaced directory if the atomic replacement fails. Identical installs are no-ops.
+
+For isolated installer checks, use `--agents-home /absolute/temporary-agents-home`; do not test against the live skill directory. Restore using the exact backup path printed by installation:
 
 ```bash
-npx --yes img2threejs@latest install --host claude
+python3 ~/.img2godot/repo/install.py --rollback /absolute/.agents/skill-backups/game-asset-3d-pipeline-PRINTED-DIGEST
 ```
 
-The `--yes` above belongs to **npx**, allowing the CLI package download. It is not an
-overwrite flag for the base installer.
+Rollback refuses unrelated or altered backups and preserves any displaced current installation as another backup. Installation does not modify shipped assets, historical builds or project source. Do not install until the parent integration owner has verified the fork and rollback/refusal behavior.
 
-Supported host directories are `~/.hermes`, `~/.claude`, `~/.codex`, and
-`$XDG_CONFIG_HOME/opencode` (default `~/.config/opencode`). The CLI fetches the base skill
-from GitHub at `v2.0.0` by default. Its `--ref` accepts a semantic tag (including prereleases)
-or a full 40-character commit SHA, **not a branch**:
+## Actual reconstruction quickstart
+
+Run from the fork checkout or installed skill directory. Paths below are deliberately explicit; the agent must author the spec and build script for the approved image, not merely copy placeholders or reuse a shipped GLB.
 
 ```bash
-npx --yes img2threejs@latest update --ref v2.0.0
+python3 forge/godot/pipeline.py init --work /absolute/asset-work/slug --source /absolute/approved.png
+python3 forge/godot/pipeline.py spec --work /absolute/asset-work/slug --file /absolute/authored-spec.json
+python3 forge/godot/pipeline.py build --work /absolute/asset-work/slug --stage blockout --script /absolute/build_slug.py --blender /Applications/Blender.app/Contents/MacOS/Blender --godot /absolute/Godot.app/Contents/MacOS/Godot --launcher /absolute/product/tools/godot-window.mjs
 ```
 
-Checkouts live under `~/.img2threejs/releases/<sha>/img2threejs`; hosts installing the same
-commit share that checkout. `update` refuses lower skill versions, including prerelease
-downgrades. The installer refuses manual installs and unrelated links rather than
-overwriting them. Keep those installations, or deliberately move their entries yourself
-before switching to CLI-managed installs. `--dry-run` is offline and writes nothing; it
-does not verify remote ref availability or downgrades.
+Before `spec`, the agent opens the reference, analyzes identity/silhouette/proportions, inventories visible components and fine details, records hidden-side uncertainty, researches Blender/glTF and writes the validated Godot-specific spec described in SKILL.md. The upstream component-zone/grid detail inventory is retained, but reconstruction is authored `bpy`, not TypeScript. The asset-specific build implements `--spec <JSON> --out <GLB> --stage <ID>` and uses those mapped details to construct deliberate image-matched geometry. Generic primitive stand-ins are not acceptable.
 
-**Manual alternative — choose this or the CLI, not both at the same skill path:**
+Build produces `stages/blockout/model.glb`, `blender-report.json`, `godot/godot-report.json`, and `review-template.json`. It reimports the GLB in fresh Blender for measurements and uses Godot as the visual acceptance renderer. Open every capture PNG and the source image, then fill the generated template's reviewer/verdict/observations, reference-inspection flag and due detail checks without modifying hashes.
+
+Fill every stage-specific/authored goal in `criteriaChecks: [{criterion,verdict,observation}]`; criterion text must
+match the generated `requiredEvidence` item exactly. A failed criterion blocks an overall pass, not merely advancement
+to a generic checkbox. Observations describe actually inspected findings, never inferred success.
 
 ```bash
-git clone https://github.com/img2threejs/img2threejs.git ~/.claude/skills/img2threejs
+python3 forge/godot/pipeline.py review --work /absolute/asset-work/slug --stage blockout --file /absolute/filled-review.json
+python3 forge/godot/pipeline.py next --work /absolute/asset-work/slug
+python3 forge/godot/pipeline.py status --work /absolute/asset-work/slug
 ```
 
-For multiple hosts, keep one checkout and point each host's `img2threejs` skill entry at
-it with a symlink so copies cannot drift apart. A manual clone follows the repository's
-default branch rather than the CLI's pinned release.
+Repeat the same build→inspect→review commands in order for **blockout → structural → form → material → surface → lighting → interaction → optimization**. A build never auto-passes. Failed or stale hash-bound reviews block advancement. Render success does not establish visual fidelity. Optimization must preserve observed detail within declared budgets, not hide missing work.
 
-You can also install the CLI globally with `npm install -g img2threejs`, then run
-`img2threejs install`. To test it from this checkout, run
-`node bin/img2threejs.mjs install --dry-run`; see [CONTRIBUTING.md](CONTRIBUTING.md)
-for packaging and publication checks.
-
-### 2. Install the plugin harness, if needed
-
-Use harness CLI **0.4.0 or newer** for short plugin IDs:
+Godot inspection can also be run directly:
 
 ```bash
-npx --yes @img2threejs/img2@latest install --yes
-npx --yes @img2threejs/img2@latest plugins
+python3 forge/godot/verify.py --model /absolute/model.glb --out /absolute/evidence --godot /absolute/Godot.app/Contents/MacOS/Godot --launcher /absolute/product/tools/godot-window.mjs
 ```
 
-The harness uses `~/.img2` and tries to link an `img2` launcher onto your `PATH`. Read
-the install output for its location. `plugins` lists the official live catalog; `list`
-shows registrations on your machine.
+`godot-report.json` binds the model SHA-256, engine version, mode, measured facts and captures. Headless import/statistics are mandatory; the launcher adds real phone **844×390** and tablet **1280×800** renders. Do not activate/focus game windows or start a second engine while an engine is running; read saved artifacts only. Without the supported launcher there is no phone/tablet acceptance proof. Verify Godot **4.5 and 4.7** with the same GLB independently and record both reports; a single engine's success is not cross-version proof.
 
-For short commands that use the latest published harness, set this bash/zsh alias:
+After all eight mechanical/visual stage gates, export a working evaluation bundle to a **new asset-work destination**:
 
 ```bash
-alias img2='npx --yes @img2threejs/img2@latest'
+python3 forge/godot/pipeline.py export --work /absolute/asset-work/slug --destination /absolute/asset-work/evaluation/new-asset.glb
 ```
 
-It lasts for this shell session. Add it to `~/.zshrc` and run `source ~/.zshrc` to keep
-it in future zsh sessions. Every `img2 ...` command below also works with the explicit
-`npx --yes @img2threejs/img2@latest ...` prefix. An existing harness checkout and its
-older launcher are not automatically upgraded by running `install` again.
+This internal export preserves evidence; it does **not** authorize shipping or constitute developer artistic approval.
+Only after explicit developer approval may the same reviewed GLB be published into game assets and its manifest updated.
+Residual shape/UV/material defects remain visible review findings, never hidden by the export gate.
 
-The first `--yes` in the harness install command belongs to npx; the final one skips
-the harness consent prompt. Neither permits replacing an existing plugin.
+Deliver source/reference, accepted spec, authored build, texture provenance, stage measurements/reviews/captures and final textured GLB. Do not replace historical approved assets or regenerate old builds as part of installing the pipeline.
 
-### 3. Choose plugins — do not install everything by default
+## Budgets and texture origin
 
-| Plugin / source README | Adds | Access | Install after harness setup |
-|---|---|---|---|
-| [cs2](https://github.com/img2threejs/plugin-cs2) | `cs2` profile — CS2 weapon/glove skin reconstruction, family adapters, finish rules and blocking domain review gates | Public | `img2 add cs2 --yes` |
-| [character](https://github.com/img2threejs/plugin-character) | `animated-character` profile — character workflow plus Stage R rigging/animation gates | Public | `img2 add character --yes` |
-| [environment](https://github.com/img2threejs/plugin-environment) | The environment plugin, distributed from a private repository | **Private — authorized Git access required** | `img2 add environment --yes` |
-| [img2glb](https://github.com/img2threejs/plugin-img2glb) | Explicit `image → glb` route through the hosted TRELLIS space; generated mesh output, not the default code-only route | Public | `img2 add img2glb --yes` |
-| [hello-cube](https://github.com/img2threejs/plugin-hello-cube) | Small deterministic image-to-Three.js cube example and plugin contract exerciser | Public | `img2 add hello-cube --yes` |
+Use project-specific triangle, image-resolution, decoded image-memory and GLB-file budgets. `maxTextureBytes` is total decoded RGBA memory of unique embedded images (`width × height × 4`), not compressed PNG/JPEG bytes. `maxGlbBytes` is on-disk GLB size. The exported embedded image bytes must match declared texture hashes.
 
-These are announced plugins; use `img2 plugins` for the current catalog. Open each
-plugin's linked README for its input requirements, dependencies and tool setup.
-For CS2 and character workflows:
-
-```bash
-img2 add cs2 --yes
-img2 add character --yes
-img2 list
-img2 doctor
-img2 sync --check
-```
-
-An installed domain plugin contributes its checklist steps, evidence collection, spec
-augmentation (quality floors merge raise-only), and blocking review gates. With no plugins
-installed, the base has `generic` and `character` profiles. A profile whose plugin is
-missing (`cs2`, `animated-character`) fails loud naming what is installed; it never silently
-downgrades. The base skill is not a plugin: **do not use `img2 add` to install this repository.**
-
-**Private environment source:** GitHub access and working Git credentials are required.
-The link may return 404 when you are signed out or lack permission. The public
-[`img2-environment` npm installer](https://www.npmjs.com/package/img2-environment) can
-bootstrap the harness, but does not grant access to the private source:
-
-```bash
-npx --yes img2-environment install --dry-run
-npx --yes img2-environment install --yes
-```
-
-That installer has its own SDK pin and may retain older CLI presentation.
-For lifecycle and trust details, read the [harness usage guide](https://github.com/img2threejs/img2#quickstart).
-To write a plugin, follow [WRITING_A_PLUGIN.md](https://github.com/img2threejs/img2/blob/main/docs/WRITING_A_PLUGIN.md).
-
-### 4. Run a reconstruction in your agent
-
-Start a new agent session or restart the current one after installing skills.
-In Claude Code, attach an image or give its path and invoke:
-
-```text
-/img2threejs Rebuild the object in ./reference.png as a procedural Three.js model.
-Keep its proportions, silhouette and colours. Follow the quality gates.
-Report the output files, render-review evidence and any inferred regions.
-```
-
-In another host, ask the agent to use the installed `img2threejs` skill with that image.
-For a plugin workflow, name the profile explicitly, for example:
-
-```text
-Use img2threejs with the installed cs2 domain and ./reference.png.
-Follow the cs2 profile and its family-specific reconstruction and review gates.
-```
-
-```text
-Use img2threejs with the installed character plugin and ./reference.png.
-Follow the animated-character profile. Do not claim animation readiness until its rig gates pass.
-```
-
-The agent validates the image, writes an assessment and spec, generates the factory pass
-by pass, and reviews rendered comparisons. Installation alone does none of that.
-For a multi-session reconstruction, run these from the skill root:
-
-```bash
-python3 forge/state.py init --reference <image> --profile character --spec object-sculpt-spec.json
-python3 forge/next.py --state .img2threejs/state.json
-```
-
-### 5. Audit and maintain the installation
-
-```bash
-npx --yes img2threejs@latest doctor   # base-skill host/link report
-img2 doctor                         # static audit of registered plugins
-img2 update cs2 --check              # read-only check for a newer plugin version
-img2 update cs2                     # install a newer available plugin version
-img2 remove cs2                     # unlink owned links and back up the managed checkout
-```
-
-Neither doctor command proves visual likeness or animation quality; those require the
-reconstruction's render and domain gates. `img2 update --check` exits 1 when an update is
-pending, not only on errors. Local `--link` checkouts are live and are not fetched by update.
-
-| Finding / refusal | Meaning and next action |
-|---|---|
-| `WARN ... multi-capability provider` | The plugin declares multiple capabilities; each edge resolves independently. This warning alone does not fail `img2 doctor`. Do not delete capabilities or reinstall just to remove it. |
-| `FAIL ... opencode link missing` | The reported OpenCode skill link is missing. Inspect the reported path and registered checkout; it is not proof that the reconstruction code is broken. `sync` regenerates harness data, not host links. |
-| Plugin already registered | Use `img2 list` and `img2 update <id>`, not another ordinary `add`. Use `add --force` only when deliberately replacing a registration; it backs up and reinstalls rather than merely repairing a link. |
-| Unmanaged base skill | Keep the manual checkout, or deliberately move its host entry before using the base installer. The base CLI does not overwrite it. |
-| Private source returns 404 / access denied | Sign in with a GitHub account authorized for that repository and configure Git credentials. A public npm installer cannot bypass source permissions. |
-
-For plugin audit exit codes, replacement behavior and additional troubleshooting, see
-the [img2 README](https://github.com/img2threejs/img2#refs-replacement-and-common-refusals).
-
-### Driving it harder
-
-The one-liner leaves the judgement calls to the skill. When you already know what "correct" means for your subject, say so — each line below maps onto a real gate or artifact in the pipeline, so it changes what gets enforced rather than just adding adjectives:
-
-```
-/img2threejs Rebuild the subject in this image as a procedural Three.js model.
-
-Fidelity   Hold proportions and silhouette to the reference. Enumerate the identity-defining
-           details first — bevels and rounding, panel seams, fasteners, engraved or painted
-           linework, gloss vs matte zones, wear — and drop any detail you cannot place on a
-           real component instead of faking it.
-Materials  Derive the finish class and gradient stops from the reference pixels, not from
-           memory. Flag any colour that will not survive tone-mapping.
-Runtime    Expose pivots and sockets for whatever should move, plus a userData.tick for a
-           looping idle animation.
-Gates      Run --strict-quality, and do not advance a pass until the side-by-side review
-           passes. Report per-region confidence for anything the image cannot show.
-```
-
-Useful additions depending on the subject:
-
-- **A specific person or character** — `Maximize likeness: fit the parametric template to the landmarks, de-light and camera-match the reference, then project it. Tell me which regions are inferred.`
-- **An animal or creature** — `This is a creature, not a humanoid — use the quadruped body plan and the body-unit proportion system.`
-- **A saturated anodized or candy finish** — `The coat is candy-coat, not gem-metal. Keep the hue; do not let the environment steal it.`
-- **A cost ceiling** — `Stay at low effort and skip the presentation composer; I only need the evaluation render.`
-
-The scripts run from the skill root and need only Python 3.10+ — nothing to install.
-
-```bash
-python3 forge/stage1_intake/probe_image.py <image>
-python3 forge/stage2_spec/new_pre_spec_assessment.py "Name" --image <image> --out assessment.json
-python3 forge/stage2_spec/new_sculpt_spec.py "Name" --image <image> --assessment assessment.json --out spec.json
-python3 forge/stage2_spec/validate_sculpt_spec.py spec.json --strict-quality
-python3 forge/stage3_build/generate_threejs_factory.py spec.json --out src/createObjectModel.ts
-```
-
-The factory generator repeats the strict-quality gate and is fail-closed: on failure it returns
-`BLOCKED` with the spec artifact, failure metrics, causes, and next action, and does not write a
-factory. `--allow-nonstrict` is only for explicit legacy test fixtures, never production output.
-
-### Copy-paste prompts for the GLB-reference route
-
-Rebuilding a character from a **GLB reference** rather than a photo is a different route with its own
-gates — the GLB is a measurement instrument and never ships. Three prompts cover it, each in its own
-copy block:
-
-| Prompt | Use it when | Do not use it when |
-|---|---|---|
-| [Build](docs/GLB_CHARACTER_PROMPT.md) | you have a GLB and no built surfaces yet | there is no GLB, or the build already completed and merely looks wrong |
-| [Polish](docs/GLB_CHARACTER_POLISH_PROMPT.md) | the build completed and the result does not look like the GLB | the surfaces were never built — that is a build re-run, not a polish |
-| [Animation](docs/GLB_CHARACTER_ANIMATION_PROMPT.md) | the figure looks right standing still and has passed the build gates | the surface is ungated, or `joint_loops.py` fails — that is a surface finding no weight tuning reaches |
-
-They force every parameter the GLB genuinely carries — size, proportions, per-band widths and
-centroids, base colour, roughness and metalness — to the measured value, with the check that proves
-it landed. Three things are **not** 1:1 and each prompt says so: rigging and animation are usually
-absent from the asset (`skinCount: 0`, `animationCount: 0`), texture images and normal maps are
-deliberately not copied per this skill's code-only contract, and nothing finer than the node's cell
-size can be carried at all.
-
-**These are reference material, not a guarantee.** They are written to be general, so the measured
-figures in them came from one character and are there to show what to measure — not values to copy.
-Run the one that matches your situation rather than all three in sequence; each notes the cost of
-being used out of turn.
-
-For the script-by-script reference, the full scripts table, and expected artifacts, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
-
----
-
-## Why it is token-efficient
-
-Most image-to-3D agent loops burn tokens by asking the model to do mechanical work — re-reading the whole model every pass, scoring pixels, validating JSON by hand, re-running steps it already did. img2threejs pushes all of that into deterministic scripts and spends model tokens only where judgment is actually required.
-
-- **Scripts enforce, the model judges.** The Python scripts handle validation, gating, spec authoring, PBR extraction, comparison-sheet packaging, and pipeline state. They never score visuals. The model's tokens go to one thing: looking at a single side-by-side sheet and deciding pass or fail.
-- **Zero dependencies, zero install churn.** Every script is pure Python 3.10+ standard library. No pip, no PIL, no numpy, no Playwright. PNG read/write is done with `struct` and `zlib`. Nothing to install means nothing to debug in-context.
-- **Pass-gated generation.** The code generator emits only the currently unlocked build pass. The model does not regenerate or re-read the entire model on every iteration — each step is small and scoped.
-- **Fail fast, before codegen.** A strict-quality gate blocks shallow specs before a single line of Three.js is generated, so you never spend tokens rendering a model that was underspecified from the start.
-- **One image per review.** Each pass is judged from exactly one packaged comparison sheet (reference beside render), not a scattering of screenshots.
-- **Text output, not binaries.** The result is diffable TypeScript plus a JSON spec — small, reviewable, and version-controllable, instead of multi-megabyte mesh files.
-
-The net effect: you still get a faithful 3D model from an image, but the expensive model context is reserved for visual judgment and code, not bookkeeping. For the full per-stage and per-cycle token breakdown, see [docs/TOKEN_COST.md](docs/TOKEN_COST.md).
-
----
-
-## Scripts
-
-| Script | Role |
-| --- | --- |
-| `stage1_intake/probe_image.py` | Image metadata and obvious technical issues (not a visual check). |
-| `stage2_spec/new_pre_spec_assessment.py` | Classify the object, score complexity, emit a quality contract. |
-| `stage2_spec/new_sculpt_spec.py` | Author the ObjectSculptSpec from the assessment. |
-| `stage2_spec/validate_sculpt_spec.py` | Validate the spec; `--strict-quality` blocks shallow specs before codegen. |
-| `stage1_intake/extract_pbr_evidence.py` | Reference-derived PBR evidence per crop (inference, not inverse rendering). |
-| `stage1_intake/material_region_analysis.py` | Crop material regions, run texture/PBR evidence, and resolve registry profiles. |
-| `stage2_spec/apply_material_analysis.py` | Wire region assignments, priors, maps, and provenance into ObjectSculptSpec. |
-| `stage3_build/orchestrate_passes.py` | Locked pass state: status, check, sync. |
-| `stage3_build/generate_threejs_factory.py` | Emit the Three.js `Group` factory for the current unlocked pass. |
-| `stage4_review/material_views.py` | Emit multi-angle, zoomed, microscope, environment, and capture-readback contracts. |
-| `stage4_review/material_comparator.py` | Compare the visible material crop and classify per-channel mismatches. |
-| `stage4_review/material_feedback.py` | Apply bounded, material-scoped corrections through the existing stop policy. |
-| `stage4_review/material_gate.py` | Block material-pass until registry, crop, render, compatibility, and comparison evidence passes. |
-| `stage4_review/make_comparison_sheet.py` | Package one reference-vs-render sheet for review. |
-| `stage4_review/append_review.py` | Record a per-pass review: scores, decision, evidence. |
-| `_shared/feature_acceptance_policy.py` | Internal helper enforcing per-feature score thresholds. |
-| `stage1_intake/build_detail_inventory.py` | Slice the reference into zones and scaffold a detail inventory. |
-| `stage1_intake/extract_landmarks.py` | Overlay a landmark grid and scaffold an anatomy block for characters. |
-| `stage1_intake/solve_camera_pose.py` | Emit a reference-camera block so the render can be camera-matched. |
-| `stage1_intake/delight_albedo.py` | Approximate a neutral albedo from the photo before texture projection. |
-| `stage3_build/bake_projected_texture.py` | Emit a projection/UV-bake descriptor for photo-texture projection. |
-
-| `stage5_rig/rig_spec.py` | Derive and validate a skeleton from the component tree, so bones cannot drift from the geometry. |
-| `stage5_rig/geodesic_skinning.py` | Vertex weights from distance measured through the solid; keeps rigid roles out of smooth skinning. |
-| `stage5_rig/validate_rig_payload.py` | Blocking payload-integrity gate before a `THREE.Skeleton` is bound. |
-| `stage1_intake/extract_hair_evidence.py` | Hair/skin split, banded coverage, hairline, highlight band, root-to-tip delta. |
-| `stage4_review/scalp_exposure.py` | HARD gate: finds bald patches on geometry, before any render. |
-| `stage4_review/hair_gate.py` | Soft gate: hair coverage, hairline and highlight offsets against the reference. |
-| `stage4_review/interior_difference.py` | Appearance difference inside the silhouette, banded by height. Required per visual pass. |
-| `_shared/chirality.py` | Left/right as an importable convention, with the two gates the two chirality defects need. |
-| `_shared/pipeline_routing.py` | Fail-closed weapon/character routing; low confidence resolves to `request-input`. |
-
-This is a curated selection — `forge/` holds around ninety modules. The executable reference with every flag is [`grimoire/scripts.md`](grimoire/scripts.md), and the gate-by-gate contract is [`grimoire/review/gates_reference.md`](grimoire/review/gates_reference.md). The rest of `grimoire/` holds the rubrics each gate applies (validation, pre-spec assessment, procedural patterns, material and lighting realism, attachment correctness, action-ready models, self-correction).
-
-### Optional reference-fidelity tooling
-
-The stdlib-only core can use an isolated evidence layer without taking on runtime dependencies:
-SAM2 component masks, Depth Anything V2 relative-depth priors, MediaPipe face/pose landmarks,
-Chrome DevTools diagnostics, Three.js scene inspection, Playwright cross-browser fallback, and
-version-aware Context7 retrieval. These tools never approve a pass or silently provide geometry.
-Install, routing, provenance rules and exact commands:
-[`docs/integrations/reference_fidelity_tooling.md`](docs/integrations/reference_fidelity_tooling.md).
-
-### Optional GLB-baseline character pipeline
-
-[`integrations/glb_character_pipeline`](integrations/glb_character_pipeline) reconstructs a character
-from a **multipart GLB used as a measurement instrument plus its diffuse image**, and emits the
-procedural TypeScript the demo actually ships — no `.glb` or `.bin` is fetched at runtime. It carries
-its own `pyproject.toml`/`uv.lock` so the stdlib-only `forge` core stays dependency-free, and operates
-on a companion showcase checkout via `IMG2THREEJS_SHOWCASE_ROOT`.
-
-It applies **only** when a build has a GLB to measure — skip it entirely otherwise, and use the core
-image-driven pipeline instead. Reproduces `girl-character`'s shipped `crossSections.ts` exactly (748
-rings, 86,240 ring points). Method and per-stage rationale:
-[`PIPELINE.md`](integrations/glb_character_pipeline/PIPELINE.md).
-
----
-
-## What you get
-
-- An `ObjectSculptSpec` JSON: the full component tree, materials, repetition systems, sockets, and a recorded review history for every pass.
-- A TypeScript `createObjectNameModel(spec, options)` factory returning a `THREE.Group`, with `root.userData.sculptRuntime` exposing nodes, sockets, colliders, and destruction groups.
-- For character builds, `root.userData.rig`: bones, one shared `Skeleton`, bone order and index map, and a `bound` flag computed from whether every skinned mesh actually bound.
-- A render plus comparison sheets documenting the fidelity at each pass.
-For the script-by-script reference and the full list of output artifacts, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
-
----
-
-## Roadmap
-
-**Shipped:**
-
-- **v1.0** — object pipeline: staged sculpt, render-vs-reference review loop, action-ready hierarchy.
-- **v1.1** — detail-first analysis: required detail inventory, strict-quality gate.
-- **v1.2** — humanoid character generator: anatomy track, proportion-lock and feature-placement passes.
-- **v1.3** — quality & efficiency: the Divine Eye deterministic review harness, input-integrity and geometry-truth gates, reference-grounded texture and gradient analysis, CIEDE2000 colour math.
-- **v1.4 — The Weapon Update** — CS2 image-matched reconstruction: provenance-aware intake, projection-first finishes, family-specific weapon adapters, and structural review gates.
-- **v1.4.1** — CS2 hardening: explicit component coverage, a dedicated Glock-18 assembly contract, map-stripped blockout evidence, and stricter geometry-integrity checks.
-- **creature generator** — 4 body plans (quadruped / avian / winged-dragon / serpentine), `animalAnatomy` spec, spine-loft geometry, ΔE00 colour gates.
-- **v1.5 — The Character Update** — a skeleton derived from the component tree and bound to `SkinnedMesh` geometry, geodesic skinning, hair as a five-stage subsystem with a hard scalp-exposure gate, chirality gates, interior-difference review, the `tapered-sweep` primitive, the material pipeline with a blocking acceptance gate, and resumable workflow state. Not included: the `hairProfile` compiler, IK, pose-sweep gating, clothing.
-- **v2.0 — The Plugin Update** — the domain registry, pull-based spec augmentation
-  with raise-only quality floors, the emission-target socket with provenance, per-plugin blocking
-  gates, and the img2 harness (`img2 install/add/doctor`). CS2 extracted into `plugin-cs2`,
-  `animated-character` served by `plugin-character`; the base names no domain. The "plugin
-  ecosystem and API" originally slotted for the Procedural World bundle, shipped first as its own major.
-
-**Next — one theme per release:**
-- **v2.1 — The Character Split**: the in-repo `character` domain joins `plugin-character`, so the base names no domain and the v2.0 plugin split closes.
-- **v2.2 — The Environment Update**: buildings, rooms, streets, vegetation, terrain-aware and multi-object reconstruction.
-- **v2.3 — The Game Pipeline Update**: Unity and Unreal exporters, a Blender bridge, LOD and collision-mesh generation.
-- **v2.4 — The Animation Update**: auto rigging, auto skin weights, Mixamo compatibility, facial rig.
-- **v2.5 — The AI Studio Update**: web UI, batch processing, visual prompt builder, cloud rendering.
-- **v3.0 — The Procedural World Update**: multi-view reconstruction, procedural city generation, semantic world understanding.
-
-The arc: assets (v1.4–v1.5) → the plugin ecosystem (v2.0–v2.1) → worlds (v2.2–v2.3) → production (v2.4–v2.5) → an AI game-asset platform that generates playable worlds from reference images (v3.0).
-
-**→ Full roadmap** — per-version detail, the four-phase long view, and the tracked capability gaps: **[ROADMAP.md](ROADMAP.md)**. Technical specification: [docs/UPGRADE_PLAN.md](docs/UPGRADE_PLAN.md).
-
----
-
-## Honesty about limits
-
-A single image cannot reveal hidden sides or guarantee exact geometry. The skill states plainly when output is approximate, stylized, or low-poly, and infers unseen faces by mirroring visible ones rather than faking confidence. It is strong for hard-surface objects; characters are stylized reconstructions, not photoreal likeness. "This cannot reach the requested fidelity from this image" is a valid, expected result.
-
----
-
-## Star history
-
-If img2threejs is useful to you, a star helps others find it.
-
-<a href="https://www.star-history.com/#hoainho/img2threejs&Timeline">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=hoainho/img2threejs&type=timeline&theme=dark&legend=top-left&sealed_token=HhzHOwb32twyQntl75HMLNf5E7hkH9aNTaSpn20ZThsyQC2Rt7fA_Wthz0osSgItW_WUiwA3MUa5-7GXquQCVL1uHLePUOUN9uVoiArBCm-l21DXJ51yVQ" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=hoainho/img2threejs&type=timeline&legend=top-left&sealed_token=HhzHOwb32twyQntl75HMLNf5E7hkH9aNTaSpn20ZThsyQC2Rt7fA_Wthz0osSgItW_WUiwA3MUa5-7GXquQCVL1uHLePUOUN9uVoiArBCm-l21DXJ51yVQ" />
-    <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=hoainho/img2threejs&type=timeline&legend=top-left&sealed_token=HhzHOwb32twyQntl75HMLNf5E7hkH9aNTaSpn20ZThsyQC2Rt7fA_Wthz0osSgItW_WUiwA3MUa5-7GXquQCVL1uHLePUOUN9uVoiArBCm-l21DXJ51yVQ" width="600" />
-  </picture>
-</a>
-
----
-
-## Support the project
-
-img2threejs is free and open source. If it saved you time or found its way into your project, consider supporting continued development:
-
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/O8A625YLSR)
-
-VietQR / MoMo / PayPal also work — see the [donate page](https://img2threejs.io/donate.html).
-
----
-
-## Sponsors
-
-Reconstruction-by-code is an inference workload before it is a graphics one: every gate rerun, every
-render-vs-reference pass and every material fit spends tokens. These three pay for that loop.
-
-<table>
-  <tr>
-    <td align="center" width="200">
-      <a href="https://www.atlascloud.ai/console/coding-plan" target="_blank" rel="noopener noreferrer">
-        <picture>
-          <source media="(prefers-color-scheme: dark)" srcset="assets/sponsors/atlas-cloud-logomark-white.svg" />
-          <source media="(prefers-color-scheme: light)" srcset="assets/sponsors/atlas-cloud-logomark-black.svg" />
-          <img alt="Atlas Cloud" src="assets/sponsors/atlas-cloud-logomark-black.svg" width="72" height="67" />
-        </picture>
-      </a>
-      <br /><sub><b>Atlas Cloud</b></sub>
-      <br /><sub>Full-modal AI inference</sub>
-    </td>
-    <td align="center" width="200">
-      <a href="https://www.tripo3d.ai/" target="_blank" rel="noopener noreferrer">
-        <picture>
-          <source media="(prefers-color-scheme: dark)" srcset="assets/sponsors/tripo-logomark-white.svg" />
-          <source media="(prefers-color-scheme: light)" srcset="assets/sponsors/tripo-logomark-black.svg" />
-          <img alt="Tripo" src="assets/sponsors/tripo-logomark-black.svg" width="68" height="68" />
-        </picture>
-      </a>
-      <br /><sub><b>Tripo</b></sub>
-      <br /><sub>Image &amp; text to 3D</sub>
-    </td>
-    <td align="center" width="200">
-      <a href="https://hyper3d.ai/" target="_blank" rel="noopener noreferrer">
-        <picture>
-          <source media="(prefers-color-scheme: dark)" srcset="assets/sponsors/hyper3d-logomark-white.png" />
-          <source media="(prefers-color-scheme: light)" srcset="assets/sponsors/hyper3d-logomark-black.png" />
-          <img alt="Hyper3D" src="assets/sponsors/hyper3d-logomark-black.png" width="68" height="68" />
-        </picture>
-      </a>
-      <br /><sub><b>Hyper3D</b></sub>
-      <br /><sub>Rodin generative 3D</sub>
-    </td>
-  </tr>
-</table>
-
-### Atlas Cloud
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/sponsors/atlas-cloud-logomark-white.svg" />
-  <source media="(prefers-color-scheme: light)" srcset="assets/sponsors/atlas-cloud-logomark-black.svg" />
-  <img alt="" src="assets/sponsors/atlas-cloud-logomark-black.svg" width="38" height="36" align="right" />
-</picture>
-
-**[Atlas Cloud](https://www.atlascloud.ai/console/coding-plan)** is a full-modal AI inference
-platform: one AI API for video generation, image generation and LLM access, with unified access to
-300+ curated models across every modality instead of a separate integration per vendor.
-
-That single endpoint is what keeps this project's loop affordable — the pipeline is token-hungry by
-design, because gating a spec before codegen means running the analysis more than once. Atlas Cloud's
-coding plan is the budget-friendly route to that API.
-
-**→ [Open the Atlas Cloud coding plan](https://www.atlascloud.ai/console/coding-plan)**
-
-### Tripo
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/sponsors/tripo-logomark-white.svg" />
-  <source media="(prefers-color-scheme: light)" srcset="assets/sponsors/tripo-logomark-black.svg" />
-  <img alt="" src="assets/sponsors/tripo-logomark-black.svg" width="38" height="38" align="right" />
-</picture>
-
-**[Tripo](https://www.tripo3d.ai/)** turns a prompt or a reference image into a production 3D asset:
-High Detail meshes up to 2M polygons for render and print, artist-grade quad **Smart Mesh** from 500
-to 50K triangles for real-time engines, AI auto-rigging, PBR texturing up to 8K, and part-level
-segmentation. Exports GLB, FBX, OBJ, USD, STL and 3MF, with first-party plugins for Blender, Unity,
-Unreal, Godot, Cocos and ComfyUI.
-
-It pairs with img2threejs as the measuring stick. A procedural rebuild lives or dies on silhouette,
-proportion and joint placement, and a quad mesh plus an auto-rig of the same subject gives those
-gates a second read that one reference photograph cannot settle on its own.
-
-**→ [Open Tripo Studio](https://www.tripo3d.ai/)**
-
-### Hyper3D
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/sponsors/hyper3d-logomark-white.png" />
-  <source media="(prefers-color-scheme: light)" srcset="assets/sponsors/hyper3d-logomark-black.png" />
-  <img alt="" src="assets/sponsors/hyper3d-logomark-black.png" width="38" height="38" align="right" />
-</picture>
-
-**[Hyper3D](https://hyper3d.ai/)** builds **Rodin**, which generates a 3D asset from a prompt or an
-image in seconds with high reference fidelity and coherent detail across views. Generation is
-steerable rather than a dice roll: bounding-box, voxel and point-cloud ControlNet guidance, partial
-editing to refine one region without disturbing the rest, smart low-poly optimisation, and
-ChatAvatar for rigged production faces. Exports STL, FBX, OBJ, GLB, glTF and USDZ.
-
-It answers the one question a single photograph never can — what the back looks like. Generate the
-subject, orbit it, and the hidden sides become references the material and surface gates can actually
-be run against, instead of assumptions the pipeline has to make silently.
-
-**→ [Open Hyper3D Rodin](https://hyper3d.ai/)**
-
----
-
-Sponsorship pays for compute, not for coverage: a sponsor's product is described here in its own
-terms, and no gate, default or benchmark in this repository is weighted toward one. Want your logo in
-this row? Open an issue or write to <hoainho.work@gmail.com>.
-
----
-
-## Contributing
-
-Contributions are welcome — procedural material recipes, new gates, host coverage, and demos especially. See [CONTRIBUTING.md](CONTRIBUTING.md) and the [roadmap](ROADMAP.md) for where the project is headed.
-
-## License
-
-Apache License 2.0. See [LICENSE](LICENSE).
+Visual texture content originates only in approved AI-generated imagery. UV-map unchanged generated images, or derive transparency extraction, resize, or packing with exact source path/hash, algorithm and output hash. No painting, procedural/synthetic pixels, recoloring, inpainting or texture baking that originates new imagery. Flat colors/vertex colors alone do not satisfy textured output. Preserve source concept generation tools such as the product's `tools/gen_image.py`; concept generation is not 3D reconstruction. Meshy has no general route here (the product's existing Kit-face exception remains project-local).

@@ -1,11 +1,21 @@
 # Changelog
 
-All notable changes to **img2threejs** are documented here.
+img2godot fork changes are recorded first; upstream img2threejs history is retained below.
+Modified for Blender/Godot from Apache-2.0 upstream revision `d508b596cb221f1509f6e50ab68fce275a5cfb44`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## Godot pipeline — 2026-10-11
+
+- Replace the default image-to-3D skill with reference analysis/detail inventory → staged, asset-specific Blender reconstruction → textured GLB → Godot acceptance.
+- Reuse upstream image probing, GLB parsing and detail inventory; port staged admission and observed-detail review instead of retaining Three.js as the build/render authority.
+- Add fresh Blender/Godot measurements, guarded phone/tablet captures, hash-bound reviews and reviewed provenance publication. Failed builds, stale evidence, budget violations and publication-time mutations block export.
+- Install under the existing `game-asset-3d-pipeline` name, preserving displaced contents outside skill discovery; reject unrelated or altered installations/backups.
+- Exercise an approved pebble reference through all eight stages. Final GLB: 1,220 triangles, 13 meshes, one 2048×1143 generated-source image; 12 final capture PNG hashes match between Godot 4.5.1 and 4.7.2.
+- Verification: 1,431 fork tests, 64 skipped; real headless imports and activation-suppressed captures. The example is a static-prop pipeline smoke, not AAA fidelity or developer shipping approval.
+
+## Upstream unreleased (historical; not the img2godot roadmap)
 
 **The Character Split — targets v2.1.** The base `character` domain joins
 `plugin-character`, so the base names no domain and the v2.0 plugin split closes.

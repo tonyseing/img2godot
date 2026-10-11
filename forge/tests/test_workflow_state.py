@@ -404,17 +404,6 @@ class WorkflowStateTest(unittest.TestCase):
             self.assertEqual(result.returncode, 3, result.stderr)
             self.assertIn("STOP: max-correction-loops-reached", result.stdout)
 
-    def test_skill_router_keeps_mandatory_state_and_reference_gates_visible(self):
-        skill = (ROOT / "SKILL.md").read_text(encoding="utf-8")
-        self.assertIn("forge/next.py --state .img2threejs/state.json", skill)
-        # The rule that matters is that the contract-read is mandatory and complete, not which
-        # domain owns the contract -- the router names no domain.
-        self.assertIn("MUST read the contract its step names, completely", skill)
-        self.assertIn("MUST read\n   `grimoire/review/gates_reference.md`", skill)
-        self.assertIn("forge/stage4_review/diagnose_render.py", skill)
-        self.assertIn("forge/stage4_review/diagnose_render_multi_angle.py", skill)
-        self.assertIn("forge/stage4_review/check_part_coverage.py", skill)
-
     def test_all_direct_router_references_exist(self):
         for relative in (
             # cs2_intake_contract.md is deliberately absent: it ships with the CS2 domain plugin,

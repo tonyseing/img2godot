@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import shutil
 import tempfile
@@ -11,6 +12,21 @@ NAME = "game-asset-3d-pipeline"
 LEGACY_SKILL_SHA256 = "0f500a6c410de5dc52b92d01a0f989074fe7d446f27aac9539d5e6f1b4fb6630"
 RESOURCES = ("SKILL.md", "README.md", "LICENSE", "PROVENANCE.json", "forge", "grimoire", "docs")
 MARKER = ".img2godot-install.json"
+
+
+def link_state(link, target):
+    if not link.exists() and not link.is_symlink():
+        return "absent"
+    if link.is_symlink() and Path(os.readlink(link)) == target:
+        return "ours"
+    return "foreign"
+
+
+def ensure_link(link, target):
+    if link_state(link, target) == "absent":
+        link.parent.mkdir(parents=True, exist_ok=True)
+        link.symlink_to(target)
+    return str(link)
 
 
 def inventory(root):
@@ -68,12 +84,16 @@ def preserve(path, backups):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--agents-home", type=Path, default=Path.home() / ".agents")
+    parser.add_argument("--claude-home", type=Path, default=Path.home() / ".claude")
     parser.add_argument("--rollback", type=Path, help="Exact backup directory printed by an earlier installation")
     args = parser.parse_args()
     home = args.agents_home.expanduser().absolute()
     skills = home / "skills"
     backups = home / "skill-backups"
     target = skills / NAME
+    link = args.claude_home.expanduser().absolute() / "skills" / NAME
+    if link_state(link, target) == "foreign":
+        raise ValueError(f"Refusing unrelated Claude skill entry: {link}")
     for path in (home, skills, backups):
         if path.is_symlink():
             raise ValueError(f"Refusing symlink directory: {path}")
@@ -94,7 +114,8 @@ def main():
             if displaced:
                 displaced.rename(target)
             raise
-        print(json.dumps({"restored": str(target), "displacedBackup": str(displaced) if displaced else None}))
+        print(json.dumps({"restored": str(target), "displacedBackup": str(displaced) if displaced else None,
+                          "claudeLink": ensure_link(link, target)}))
         return
     source = Path(__file__).resolve().parent
     for resource in RESOURCES:
@@ -119,7 +140,7 @@ def main():
         (stage / MARKER).write_text(json.dumps(marker, sort_keys=True, indent=2) + "\n")
         if target.exists():
             if inventory(target) == files:
-                print(json.dumps({"installed": str(target), "unchanged": True}))
+                print(json.dumps({"installed": str(target), "unchanged": True, "claudeLink": ensure_link(link, target)}))
                 return
             displaced = preserve(target, backups)
         try:
@@ -128,7 +149,8 @@ def main():
             if displaced:
                 displaced.rename(target)
             raise
-        print(json.dumps({"installed": str(target), "contentSha256": digest(files), "rollbackBackup": str(displaced) if displaced else None}))
+        print(json.dumps({"installed": str(target), "contentSha256": digest(files), "rollbackBackup": str(displaced) if displaced else None,
+                          "claudeLink": ensure_link(link, target)}))
     finally:
         if stage.exists():
             shutil.rmtree(stage)

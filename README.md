@@ -24,14 +24,14 @@ Their retained presence is not an img2godot npm release or a compatibility shim.
 
 Prerequisites: Python 3, Pillow (image probing), Blender and the actual target Godot engine(s). A configured coding agent supplies image understanding and authorship. It must be able to open the reference and capture PNGs. There is no reconstruction service API key. The product's activation-suppressed `tools/godot-window.mjs` launcher supplies real phone/tablet capture; a standalone user must provide an equivalent supported launcher, not a foreground fallback.
 
-Clone the standalone fork at the verified deployment tag `godot-pipeline-2026-10-11`, then install:
+Clone the standalone fork at the verified deployment tag `godot-pipeline-2026-10-15`, then install:
 
 ```bash
-git clone --branch godot-pipeline-2026-10-11 --single-branch https://github.com/tonyseing/img2godot.git ~/.img2godot/repo
+git clone --branch godot-pipeline-2026-10-15 --single-branch https://github.com/tonyseing/img2godot.git ~/.img2godot/repo
 python3 ~/.img2godot/repo/install.py
 ```
 
-The installer copies the fork skill/resources to `~/.agents/skills/game-asset-3d-pipeline`. It never creates a second discoverable alias or invokes the retired workflow. Before replacement it moves recognized existing contents to **`~/.agents/skill-backups/`**, outside skill discovery. It recognizes the pinned legacy skill SHA-256 or an unmodified prior img2godot resource inventory; unrelated/modified directories and symlinks are refused. It stages the replacement first and restores the displaced directory if the atomic replacement fails. Identical installs are no-ops.
+The installer copies the fork skill/resources to `~/.agents/skills/game-asset-3d-pipeline`. It also creates the same-name link `~/.claude/skills/game-asset-3d-pipeline` to that copy, because Claude Code reads only `~/.claude/skills`. An unrelated entry at that path is refused. It never creates a second discoverable alias or invokes the retired workflow. Before replacement it moves recognized existing contents to **`~/.agents/skill-backups/`**, outside skill discovery. It recognizes the pinned legacy skill SHA-256 or an unmodified prior img2godot resource inventory; unrelated/modified directories and symlinks are refused. It stages the replacement first and restores the displaced directory if the atomic replacement fails. Identical installs are no-ops.
 
 For isolated installer checks, use `--agents-home /absolute/temporary-agents-home`; do not test against the live skill directory. Restore using the exact backup path printed by installation:
 

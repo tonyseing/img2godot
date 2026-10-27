@@ -24,16 +24,66 @@ Their retained presence is not an img2godot npm release or a compatibility shim.
 
 Prerequisites: Python 3, Pillow (image probing), Blender and the actual target Godot engine(s). A configured coding agent supplies image understanding and authorship. It must be able to open the reference and capture PNGs. There is no reconstruction service API key. The product's activation-suppressed `tools/godot-window.mjs` launcher supplies real phone/tablet capture; a standalone user must provide an equivalent supported launcher, not a foreground fallback.
 
-Clone the standalone fork at the verified deployment tag `godot-pipeline-2026-10-15`, then install:
+The historical verified deployment is **`godot-pipeline-2026-10-15`**, fork commit
+`b7a1bef85a543bde3b40c638295d4e599fa49743`. Keep that tag immutable; it predates the shared coordinator.
+The verified scoped coordinator release is **`godot-coordinator-2026-10-27`**. Its unchanged runtime
+`runtime/godot_coordinator.py` has SHA-256
+`c4f749453a3dcbe6240d2f3e3b9578070abac1f4613f711cf6c2291d0415f6d9`.
+This release accepts coordinator integration, not asset art, full-game visuals or device budgets.
+The historical pin does not provide global coordination. Install from a new clean clone of the immutable tag:
 
 ```bash
-git clone --branch godot-pipeline-2026-10-15 --single-branch https://github.com/tonyseing/img2godot.git ~/.img2godot/repo
-python3 ~/.img2godot/repo/install.py
+git clone --branch godot-coordinator-2026-10-27 --single-branch https://github.com/tonyseing/img2godot.git img2godot-coordinator-2026-10-27
+cd img2godot-coordinator-2026-10-27
+git checkout --detach godot-coordinator-2026-10-27
+git rev-parse 'godot-coordinator-2026-10-27^{commit}'
+python3 install.py
 ```
 
-The installer copies the fork skill/resources to `~/.agents/skills/game-asset-3d-pipeline`. It also creates the same-name link `~/.claude/skills/game-asset-3d-pipeline` to that copy, because Claude Code reads only `~/.claude/skills`. An unrelated entry at that path is refused. It never creates a second discoverable alias or invokes the retired workflow. Before replacement it moves recognized existing contents to **`~/.agents/skill-backups/`**, outside skill discovery. It recognizes the pinned legacy skill SHA-256 or an unmodified prior img2godot resource inventory; unrelated/modified directories and symlinks are refused. It stages the replacement first and restores the displaced directory if the atomic replacement fails. Identical installs are no-ops.
+Record the resolved full commit ID externally with the installer's resource/runtime inventory.
+Do not replace the immutable tag with a moving branch or pass an invented source revision.
+See the [acceptance receipt](docs/plans/2026-10-27-global-godot-coordination.acceptance.json)
+and preserved full-gate log for the bounded release evidence.
 
-For isolated installer checks, use `--agents-home /absolute/temporary-agents-home`; do not test against the live skill directory. Restore using the exact backup path printed by installation:
+The installer copies the fork skill/resources to `~/.agents/skills/game-asset-3d-pipeline` and creates the same-name
+Claude link under `~/.claude/skills/`. The one canonical coordinator implementation is installed **outside the
+skill** at `~/.local/share/godot-coordinator/<source-sha256>/godot_coordinator.py`, with a stable executable
+symlink `~/.local/bin/godot-coordinator`. No runtime implementation is copied into the skill or product project.
+Python consumers resolve that link and import its public `lease(...)` API. CLI consumers execute the stable link.
+Both resolve an explicit `GODOT_COORDINATOR` path first and otherwise use that exact default path; missing
+coordination fails closed, never falls back to an independent lock.
+
+The skill marker `.img2godot-install.json` retains the exact resource SHA-256 inventory/content digest, source
+repository and fork revision, and coordinator dependency. Each immutable runtime version also records its exact
+source repository, revision, source path and source-byte SHA-256 in `.godot-coordinator-install.json`; the hash is
+both its directory name and the installed runtime hash. Source archives without Git metadata require
+`--source-revision` naming the verified commit. A revision alone does not attest uncommitted contents: retain the
+installer's exact resource and runtime hashes as deployment evidence.
+Normal reinstall checks the current skill's complete coordinator dependency against the runtime sidecar before
+reuse or publication; provenance drift is refused without replacing the skill, selector or backups. A new fork
+revision with identical runtime bytes may legitimately reuse the original immutable runtime provenance.
+
+Before replacement, recognized skills move to **`~/.agents/skill-backups/`**, outside discovery. Unrelated or
+modified skill directories, coordinator executables, runtime versions and Claude entries are refused. Runtime
+versions are immutable and retained; atomic link replacement selects a version. A failed activation restores
+the displaced skill/link state, and rollback selects the exact coordinator dependency recorded by the backup.
+Historical pre-coordinator backups leave the current external runtime untouched. Identical installs are no-ops.
+Installer transactions acquire resource-specific locks for the skill directory, stable coordinator executable
+and Claude entry before rechecking ownership, and retain them through publication or restoration. Concurrent
+installers cannot interleave those resources. Unchanged installations use the same link-restoration behavior
+on failure. Rollback compares the complete recorded runtime dependency, including source provenance, not only
+the runtime hash. Explicit source revisions must be full 40- or 64-character Git object IDs.
+Coordinator-era backup identities bind the resource inventory together with the skill's source repository,
+source revision and complete coordinator dependency; changing only marker provenance also invalidates rollback.
+Explicit historical pre-coordinator backups retain their content-only identity. Backups made by an earlier
+coordinator installer without this provenance binding are not accepted as historical pre-coordinator backups.
+
+For isolated installer checks, supply **both** `--agents-home /absolute/temporary-agents-home` and
+`--claude-home /absolute/temporary-claude-home`; never test against live skill directories. Custom skill homes
+derive isolated coordinator locations under the selected agents home (`godot-coordinator/` and
+`bin/godot-coordinator`), rather than touching the real `~/.local`. Override them explicitly with
+`--coordinator-home /absolute/temporary-versions` and `--coordinator-bin /absolute/temporary-bin/godot-coordinator`.
+Reuse the same home/location arguments on rollback, with the exact backup path printed by installation:
 
 ```bash
 python3 ~/.img2godot/repo/install.py --rollback /absolute/.agents/skill-backups/game-asset-3d-pipeline-PRINTED-DIGEST
@@ -73,7 +123,11 @@ Godot inspection can also be run directly:
 python3 forge/godot/verify.py --model /absolute/model.glb --out /absolute/evidence --godot /absolute/Godot.app/Contents/MacOS/Godot --launcher /absolute/product/tools/godot-window.mjs
 ```
 
-`godot-report.json` binds the model SHA-256, engine version, mode, measured facts and captures. Headless import/statistics are mandatory; the launcher adds real phone **844×390** and tablet **1280×800** renders. Do not activate/focus game windows or start a second engine while an engine is running; read saved artifacts only. Without the supported launcher there is no phone/tablet acceptance proof. Verify Godot **4.5 and 4.7** with the same GLB independently and record both reports; a single engine's success is not cross-version proof.
+`godot-report.json` binds the model SHA-256, engine version, mode, measured facts and captures. Headless import/statistics are mandatory; the launcher adds real phone **844×390** and tablet **1280×800** renders. The shared coordinator serializes each canonical project/cache root while allowing different roots to run concurrently. One capture permit covers the whole verifier batch (maximum **two capture batches** machine-wide); each headless engine/import and launcher engine owns the actual unique staged project separately. Never hold that project around a launcher that acquires it itself, or reuse an ancestor project token for another engine. Nested capture work reuses its authenticated ancestor batch permit. Timing/performance/thermal measurements and active play use fair machine-exclusive admission, draining shared work before entering. Foreign/unowned engines are never stopped. Missing coordination or unsupported shared-to-exclusive upgrades fail closed/actionably. Do not activate/focus game windows; preserve muted/headless operation and activation-suppressed capture, and read saved artifacts only. Retain launcher provenance including editor-presence evidence. Without the supported launcher there is no phone/tablet acceptance proof. Verify Godot **4.5 and 4.7** with the same GLB independently and record both reports; a single engine's success is not cross-version proof.
+
+Residual unmanaged-engine discovery treats `--gdscript-docs`, inline or multiple selectors, and leading-dash names ending in `project.godot` as unknown project roots. Any native-bucket `project.godot` positional/operand mixed with other native arguments is also unknown: option operands cannot safely be distinguished from project positionals. A sole native absolute `project.godot` argument is known only when that file exists and its canonical parent matches the kernel-reported working directory. An absolute `--path` without ambiguous positionals is known only when its canonical root matches the kernel-reported working directory and directly contains `project.godot`. Unmanaged relative `--path` is always unknown because its post-parser resolution cannot be proved; use an absolute root or the canonical authenticated coordinator protocol. Any engine-bucket `-u`/`--upwards` is unknown: metadata existence alone cannot prove file loading or upward fallback. With no selector, only a direct `project.godot` at the actual working directory is supported; discovery never walks ancestors. Tokens after `--` or `++` belong to the ignored user bucket.
+
+The coordinator CLI records the first cancellation without raising until explicit safe points. Owned cleanup preserves the original signal/timeout outcome while allowing authenticated nested supervisors to drain; the KILL veto and actual owned-group signal are atomic within the existing state transaction, and bounded cleanup has a **0.3-second cap**. Unknown or incomplete drains retain visible claims. Cleanup never signals foreign PIDs or a process group after its owned leader has been reaped.
 
 After all eight mechanical/visual stage gates, export a working evaluation bundle to a **new asset-work destination**:
 

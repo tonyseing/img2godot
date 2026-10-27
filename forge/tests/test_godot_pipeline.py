@@ -2,14 +2,20 @@
 from __future__ import annotations
 
 import copy
+import os
 import json
+import signal
+import subprocess
 import struct
+import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
 from forge.godot.pipeline import Pipeline, PipelineError, STAGES, STAGE_EVIDENCE, enforce_budgets, validate_spec, sha256, file_record, write_json
+from forge.godot import verify
 
 
 def specification(source):
@@ -283,6 +289,169 @@ class PipelineEdges(unittest.TestCase):
                     self.assertFalse(destination.with_suffix(".provenance").exists())
                 finally:
                     Path(target).write_bytes(original)
+
+
+class VerifierCoordinatorEdges(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        self.runtime = Path(__file__).resolve().parents[2] / "runtime" / "godot_coordinator.py"
+        self.environment = patch.dict(os.environ, {
+            "GODOT_COORDINATOR": str(self.runtime),
+            "GODOT_COORDINATOR_STATE_DIR": str(self.root / "state"),
+        })
+        self.environment.start()
+
+    def tearDown(self):
+        self.environment.stop()
+        self.tmp.cleanup()
+
+    def test_isolated_engine_is_rejected_before_spawn_or_project_cache_write(self):
+        project = self.root / "project"
+        project.mkdir()
+        config = project / "project.godot"
+        original = b'config_version=5\n[application]\nconfig/name="Private fixture"\n'
+        config.write_bytes(original)
+        spawned = self.root / "unexpected-engine"
+        engine = self.root / "Godot"
+        # A finite technical process fixture, not an actual Godot executable.
+        # Keep its conservative engine-class name so this tests domain admission.
+        engine.write_text(
+            f"#!{sys.executable}\nfrom pathlib import Path\n"
+            f"Path({str(spawned)!r}).write_text('executed')\n"
+            f"cache = Path({str(project)!r}) / '.godot'\n"
+            "cache.mkdir()\n(cache / 'unauthorized-write').write_text('executed')\n"
+            "print('4.5.1.fixture')\n")
+        engine.chmod(0o700)
+        failure = None
+        try:
+            verify.run([str(engine), "--version"], {"runs": []}, self.root,
+                       "version", "headless", project, timeout=5)
+        except verify.VerificationError as exc:
+            failure = exc
+        observed = {
+            "exit_code": failure.exit_code if failure is not None else None,
+            "coordinator_error": isinstance(failure.__cause__, verify.coordinator_module().CoordinatorError)
+                                 if failure is not None else False,
+            "domain_diagnostic": "isolated synthetic-test domain" in str(failure),
+            "preexec_marker": spawned.exists(),
+            "cache_created": (project / ".godot").exists(),
+            "project_bytes_preserved": config.read_bytes() == original,
+        }
+        self.assertEqual(observed, {
+            "exit_code": 2, "coordinator_error": True, "domain_diagnostic": True,
+            "preexec_marker": False, "cache_created": False, "project_bytes_preserved": True,
+        }, f"Raw verifier leaf bypassed domain admission: {observed!r}")
+
+    def test_isolated_neutral_target_named_by_engine_symlink_still_executes(self):
+        project = self.root / "project"
+        project.mkdir()
+        spawned = self.root / "synthetic-leaf"
+        target = self.root / "neutral-fixture"
+        target.write_text(
+            f"#!{sys.executable}\nfrom pathlib import Path\n"
+            f"Path({str(spawned)!r}).write_text('synthetic leaf executed')\n"
+            "print('4.5.1.synthetic')\n")
+        target.chmod(0o700)
+        engine_alias = self.root / "Godot"
+        engine_alias.symlink_to(target)
+        report = {"runs": []}
+        text = verify.run([str(engine_alias), "--version"], report, self.root,
+                          "version", "headless", project, timeout=5)
+        self.assertEqual(text.strip(), "4.5.1.synthetic")
+        self.assertEqual(spawned.read_text(), "synthetic leaf executed")
+        self.assertEqual(report["runs"][0]["returncode"], 0)
+
+    def test_headless_leaf_passes_authenticated_project_context_to_child(self):
+        project = self.root / "project"
+        project.mkdir()
+        report = {"runs": []}
+        command = [sys.executable, "-c",
+                   "import os,subprocess,sys; "
+                   "sys.exit(subprocess.call([sys.executable,os.environ['GODOT_COORDINATOR'],"
+                   "'check','--mode','shared']))"]
+        verify.run(command, report, self.root, "version", "headless", project)
+        self.assertEqual(report["runs"][0]["returncode"], 0)
+        self.assertEqual(report["runs"][0]["project"], str(project.resolve()))
+
+    def test_project_admission_failure_is_translated_without_spawning(self):
+        project = self.root / "project"
+        project.mkdir()
+        spawned = self.root / "unexpected-child"
+        command = [sys.executable, "-c",
+                   f"from pathlib import Path; Path({str(spawned)!r}).touch()"]
+        coordinator = verify.coordinator_module()
+        with coordinator.lease(project=project, purpose="existing project owner"):
+            with self.assertRaises(verify.VerificationError) as rejected:
+                verify.run(command, {"runs": []}, self.root, "version", "headless", project)
+        self.assertIsInstance(rejected.exception.__cause__, coordinator.CoordinatorError)
+        self.assertEqual(rejected.exception.exit_code, rejected.exception.__cause__.exit_code)
+        self.assertFalse(spawned.exists())
+
+    def test_missing_shared_coordinator_fails_closed_before_spawning(self):
+        with patch.dict(os.environ, {"GODOT_COORDINATOR": str(self.root / "missing")}):
+            with self.assertRaisesRegex(verify.VerificationError, "coordinator"):
+                verify.run([sys.executable, "-c", "raise AssertionError('must not spawn')"],
+                           {"runs": []}, self.root, "version", "headless", self.root)
+
+    def test_owned_child_uses_ancestor_remaining_budget_and_is_reaped(self):
+        project = self.root / "project"
+        project.mkdir()
+        completed = self.root / "child-completed"
+        command = [sys.executable, "-c",
+                   f"import time; from pathlib import Path; time.sleep(1.5); Path({str(completed)!r}).touch()"]
+        report = {"runs": []}
+        started = time.monotonic()
+        with self.assertRaises(verify.VerificationError) as timed_out:
+            with verify.coordinator_lease(mode="capture", timeout=0.35, purpose="bounded verifier batch"):
+                verify.run(command, report, self.root, "version", "headless", project, timeout=5)
+        self.assertEqual(timed_out.exception.exit_code, 124)
+        self.assertLess(time.monotonic() - started, 1.2, "Child ignored its ancestor's shorter deadline")
+        self.assertFalse(completed.exists())
+        self.assertIsNotNone(report["runs"][0]["returncode"])
+
+    def test_sigint_reaps_owned_child_before_releasing_project_claim(self):
+        project = self.root / "project"
+        project.mkdir()
+        pid_path = self.root / "owned-child.pid"
+        completed = self.root / "child-completed"
+        child = ("import os,time; from pathlib import Path; "
+                 f"ready=Path({str(pid_path)!r}); temporary=ready.with_suffix('.tmp'); "
+                 "temporary.write_text(str(os.getpid())); temporary.replace(ready); "
+                 f"time.sleep(2); Path({str(completed)!r}).touch()")
+        script = (
+            "import sys; from pathlib import Path; from forge.godot import verify; "
+            f"verify.run([sys.executable,'-c',{child!r}],{{'runs':[]}},"
+            f"Path({str(self.root)!r}),'version','headless',Path({str(project)!r}),timeout=5)"
+        )
+        process = subprocess.Popen([sys.executable, "-c", script],
+                                   cwd=Path(__file__).resolve().parents[2],
+                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                   text=True, start_new_session=True)
+        try:
+            deadline = time.monotonic() + 3
+            while not pid_path.exists() and process.poll() is None and time.monotonic() < deadline:
+                time.sleep(.01)
+            self.assertTrue(pid_path.exists(), "Owned child did not reach the readiness barrier")
+            child_pid = int(pid_path.read_text())
+            interrupted = time.monotonic()
+            process.send_signal(signal.SIGINT)
+            process.communicate(timeout=1)
+            self.assertNotEqual(process.returncode, 0)
+            self.assertLess(time.monotonic() - interrupted, 1)
+            with self.assertRaises(ProcessLookupError):
+                os.kill(child_pid, 0)
+            self.assertFalse(completed.exists())
+            status = subprocess.run([sys.executable, str(self.runtime), "status", "--json"],
+                                    capture_output=True, text=True, timeout=3)
+            self.assertEqual(status.returncode, 0, status.stderr)
+            records = json.loads(status.stdout)
+            self.assertEqual(records["active"], [])
+            self.assertEqual(records["waiting"], [])
+        finally:
+            if process.poll() is None:
+                process.kill()
+                process.communicate(timeout=3)
 
 
 

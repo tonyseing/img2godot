@@ -215,6 +215,8 @@ def embedded_texture_provenance(model, spec):
 
 
 def run_command(command, log):
+    # Preserve the inherited environment, including authenticated coordinator
+    # context. The verifier owns its batch; only its engine leaves claim caches.
     result = subprocess.run([str(part) for part in command], capture_output=True, text=True, check=False)
     Path(log).write_text(result.stdout + '\n' + result.stderr, encoding='utf-8')
     require(result.returncode == 0, f'command failed ({result.returncode}); see {log}')
@@ -389,7 +391,9 @@ class Pipeline:
             facts = read_json(blender_report)
             require(facts.get('modelSha256') == sha256(model), 'fresh Blender inspector did not inspect requested GLB')
             measured = enforce_budgets(facts, spec['budgets'], stage)
-            command = [sys.executable, Path(__file__).with_name('verify.py'), '--model', model, '--out', report_path.parent, '--godot', godot]
+            command = [sys.executable, Path(__file__).with_name('verify.py'), '--model', model,
+                       '--out', report_path.parent, '--godot', godot,
+                       '--purpose', f'img2godot {self.work.name} {stage}']
             if launcher:
                 command += ['--launcher', launcher]
             runs.append(run_command(command, directory / 'verify.log'))

@@ -8,8 +8,8 @@ from __future__ import annotations
 
 import argparse
 import contextlib
-import ctypes
-import fcntl
+from importlib.machinery import SourceFileLoader
+import importlib.util
 import hashlib
 import json
 import math
@@ -22,6 +22,7 @@ import struct
 import subprocess
 import sys
 import tempfile
+import time
 import zlib
 
 HERE = Path(__file__).resolve().parent
@@ -31,7 +32,9 @@ VIEWS = {"negative-z", "positive-x", "positive-z", "negative-x", "top", "detail"
 
 
 class VerificationError(RuntimeError):
-    pass
+    def __init__(self, message, *, exit_code=1):
+        super().__init__(message)
+        self.exit_code = exit_code
 
 
 def sha256(path: Path) -> str:
@@ -58,93 +61,87 @@ def read_object(path: Path) -> dict:
     return value
 
 
-def engine_busy(engine: Path) -> None:
-    """Match executable identity, not a bridge mentioning Godot in its args."""
+def coordinator_module():
+    """Load only the canonical external runtime, never a skill-local copy."""
+    configured = os.environ.get("GODOT_COORDINATOR")
+    launcher = Path(configured).expanduser() if configured else Path.home() / ".local/bin/godot-coordinator"
     try:
-        snapshot = subprocess.run(["ps", "-axo", "pid=,comm="], check=True,
-                                  capture_output=True, text=True).stdout
-    except (OSError, subprocess.CalledProcessError) as exc:
-        raise VerificationError(f"Cannot establish engine process safety: {exc}") from exc
-    pidpath = None
-    if sys.platform == "darwin":
+        path = launcher.resolve(strict=True)
+    except OSError as exc:
+        raise VerificationError(f"Shared Godot coordinator missing at {launcher}; install the verified fork "
+                                "or set GODOT_COORDINATOR to its external runtime") from exc
+    if not path.is_file():
+        raise VerificationError(f"Shared Godot coordinator is not a file: {path}")
+    name = "_img2godot_coordinator_" + hashlib.sha256(str(path).encode()).hexdigest()[:16]
+    if name not in sys.modules:
+        loader = SourceFileLoader(name, str(path))
+        spec = importlib.util.spec_from_loader(name, loader)
+        if spec is None:
+            raise VerificationError(f"Cannot load shared Godot coordinator: {path}")
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[name] = module
         try:
-            # ps comm can be relative argv[0]; libproc supplies the actual
-            # executable path even for an editor started as ./Godot or godot.
-            pidpath = ctypes.CDLL("/usr/lib/libproc.dylib", use_errno=True).proc_pidpath
-            pidpath.argtypes = [ctypes.c_int, ctypes.c_void_p, ctypes.c_uint32]
-            pidpath.restype = ctypes.c_int
-        except (OSError, AttributeError) as exc:
-            raise VerificationError(f"Cannot resolve Darwin engine executable identities: {exc}") from exc
-    matches = []
-    for line in snapshot.splitlines():
-        parts = line.strip().split(maxsplit=1)
-        if len(parts) != 2:
-            continue
-        pid, command = parts
-        candidate = Path(command)
-        # Linux ps 'comm' contains only a short name; /proc exposes the exact path.
-        proc_exe = Path("/proc") / pid / "exe"
-        try:
-            if pidpath is not None:
-                buffer = ctypes.create_string_buffer(4096)
-                if pidpath(int(pid), buffer, len(buffer)) <= 0:
-                    if candidate.name.lower() == "godot" and ctypes.get_errno() != 3:
-                        raise VerificationError(f"Cannot resolve possible engine executable for PID {pid}")
-                    continue
-                candidate = Path(os.fsdecode(buffer.value))
-            elif proc_exe.exists():
-                candidate = proc_exe.resolve()
-            elif not candidate.is_absolute():
-                if candidate.name.lower() == "godot":
-                    raise VerificationError(f"Cannot resolve possible engine executable for PID {pid}")
-                continue
-            binary = candidate.resolve()
-            if binary == engine or (binary.name.lower() == "godot" and binary.is_file()):
-                # Includes other installed engine versions and the launcher's
-                # private copy, but never Python/Node Godot bridge processes.
-                matches.append({"pid": int(pid), "binary": str(binary)})
-        except OSError:
-            continue  # A process that exited during the snapshot is not busy.
-    if matches:
-        raise VerificationError(f"Engine busy; executable-path matches: {matches}. "
-                                "Other engines are never stopped.")
+            loader.exec_module(module)
+        except Exception:
+            sys.modules.pop(name, None)
+            raise
+    module = sys.modules[name]
+    if not callable(getattr(module, "lease", None)):
+        raise VerificationError(f"Shared Godot coordinator has no lease API: {path}")
+    return module
 
 
 @contextlib.contextmanager
-def engine_lock(engine: Path):
-    # Global across engine versions: two verifiers must not contend for the GPU.
-    lock_path = Path(tempfile.gettempdir()) / "img2godot-engine.lock"
-    with lock_path.open("a") as lock:
-        try:
-            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError as exc:
-            raise VerificationError(f"Engine busy: another verifier owns {engine}") from exc
-        try:
-            engine_busy(engine)
-            yield
-        finally:
-            fcntl.flock(lock, fcntl.LOCK_UN)
+def coordinator_lease(*, mode="shared", project=None, timeout=None, purpose):
+    coordinator = coordinator_module()
+    try:
+        with coordinator.lease(mode=mode, project=project, timeout=timeout, purpose=purpose) as context:
+            yield context
+    except coordinator.CoordinatorError as exc:
+        raise VerificationError(f"Shared Godot coordinator: {exc}", exit_code=exc.exit_code) from exc
 
 
 def run(command: list[str], report: dict, run_dir: Path, label: str, mode: str,
-        engine: Path, timeout: int = 180) -> str:
-    engine_busy(engine)
+        project: Path, timeout: int = 180, *, env=None, launcher=False, deadline=None) -> str:
+    project = project.resolve(strict=True)
+    own_deadline = time.monotonic() + timeout
+    deadline = min(own_deadline, deadline) if deadline is not None else own_deadline
     stdout_path = run_dir / f"{label}-stdout.log"
     log_path = run_dir / f"{label}-engine.log"
-    record = {"command": command, "stdout": str(stdout_path), "log": str(log_path), "mode": mode}
+    record = {"command": command, "stdout": str(stdout_path), "log": str(log_path), "mode": mode,
+              "project": str(project), "projectOwner": "launcher" if launcher else "verifier"}
     report["runs"].append(record)
     try:
         # Only this owned process group is terminated on timeout, never a user's engine.
-        with stdout_path.open("w") as output:
+        # A launcher claims its own import/native leaves; holding its project
+        # here would deadlock or wrongly let sibling engines share the cache.
+        admission = (contextlib.nullcontext(None) if launcher else
+                     coordinator_lease(project=project, timeout=timeout, purpose=f"img2godot {label}"))
+        with admission as context, stdout_path.open("w") as output:
+            remaining = min(deadline - time.monotonic(),
+                            context.remaining() if context is not None else math.inf)
+            if remaining <= 0:
+                raise VerificationError(f"{label} timed out before process creation", exit_code=124)
+            if context is not None:
+                context.validate_command(command)
             process = subprocess.Popen(command, stdout=output, stderr=subprocess.STDOUT,
-                                       start_new_session=True)
+                                       start_new_session=True, env=env if launcher else context.env)
             try:
-                record["returncode"] = process.wait(timeout=timeout)
+                remaining = min(max(0, deadline - time.monotonic()),
+                                context.remaining() if context is not None else math.inf)
+                record["returncode"] = process.wait(timeout=remaining)
             except subprocess.TimeoutExpired as exc:
-                os.killpg(process.pid, signal.SIGKILL)
-                process.wait()
+                raise VerificationError(f"{label} timed out; owned process group stopped", exit_code=124) from exc
+            finally:
+                # Keep the claim until our direct child is reaped on every path,
+                # including cancellation. Never signal a PID from a snapshot.
+                if process.poll() is None:
+                    try:
+                        os.killpg(process.pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+                    process.wait()
                 record["returncode"] = process.returncode
-                raise VerificationError(f"{label} timed out; owned process group stopped") from exc
     except OSError as exc:
         raise VerificationError(f"Cannot start {label}: {exc}") from exc
     text = stdout_path.read_text(errors="replace")
@@ -296,19 +293,23 @@ def verify(args: argparse.Namespace, report: dict, output: Path) -> None:
     run_dir = Path(tempfile.mkdtemp(prefix="run-", dir=output))
     project = run_dir / "project"
     stage_project(model, project, launcher, report)
-    with engine_lock(engine):
+    # One capture permit covers the whole verification batch, never a project
+    # claim. Each actual engine/import leaf owns the unique staged cache root.
+    admission = (coordinator_lease(mode="capture", purpose=args.purpose)
+                 if launcher else contextlib.nullcontext(None))
+    with admission as batch:
         version_text = run([str(engine), "--headless", "--version"], report, run_dir,
-                           "version", "headless", engine, timeout=30).strip()
+                           "version", "headless", project, timeout=30).strip()
         version = version_text.splitlines()[0] if version_text else ""
         match = re.match(r"^(4\.[0-9]+\.[0-9]+)(?:\.|$)", version)
         if not match or tuple(map(int, match.group(1).split("."))) < (4, 5, 1):
             raise VerificationError(f"Godot 4.5.1 or newer 4.x is required, observed {version!r}")
         report["engine"]["version"] = version
         run([str(engine), "--headless", "--path", str(project), "--import", "--log-file",
-             str(run_dir / "import-engine.log")], report, run_dir, "import", "headless", engine)
+             str(run_dir / "import-engine.log")], report, run_dir, "import", "headless", project)
         text = run([str(engine), "--headless", "--path", str(project), "--script", "res://inspect_asset.gd",
                     "--log-file", str(run_dir / "inspect-engine.log")],
-                   report, run_dir, "inspect", "headless", engine)
+                   report, run_dir, "inspect", "headless", project)
         if "IMG2GODOT_INSPECTION_COMPLETE" not in text:
             raise VerificationError("Godot inspection did not finish")
         facts = read_object(project / "inspection.json")
@@ -320,7 +321,8 @@ def verify(args: argparse.Namespace, report: dict, output: Path) -> None:
                        "--accept-version", match.group(1), "--resolution", "844x390", "--fixed-fps", "60",
                        "--script", "res://capture_asset.gd", "--log-file", str(run_dir / "capture-engine.log"),
                        "--quit-after", "1800", "--", "--out", str(project / "captures")]
-            run(command, report, run_dir, "capture", "activation-suppressed capture", engine)
+            run(command, report, run_dir, "capture", "activation-suppressed capture", project,
+                env=batch.env, launcher=True, deadline=batch.deadline)
             captured = read_object(project / "capture-report.json")
             inventory = captured.get("captures")
             if not isinstance(inventory, list) or len(inventory) != len(PROFILES) * len(VIEWS):
@@ -356,20 +358,24 @@ def main() -> int:
     parser.add_argument("--out", required=True)
     parser.add_argument("--godot", required=True)
     parser.add_argument("--launcher", help="Explicit product tools/godot-window.mjs; never a direct headed fallback")
+    parser.add_argument("--purpose", default="img2godot verification batch",
+                        help="Human-readable shared coordinator batch purpose")
     args = parser.parse_args()
     output = Path(args.out).expanduser().resolve()
     output.mkdir(parents=True, exist_ok=True)
     report = {"schemaVersion": 1, "status": "failed", "modelSha256": None,
               "mode": "activation-suppressed capture" if args.launcher else "headless",
               "engine": {}, "facts": {}, "captures": [], "runs": [], "errors": []}
+    exit_code = 1
     try:
         verify(args, report, output)
     except (VerificationError, OSError, ValueError, TypeError, KeyError, zlib.error) as exc:
         report["errors"].append(str(exc))
+        exit_code = getattr(exc, "exit_code", 1)
     dump(output / "godot-report.json", report)
     print(json.dumps({"status": report["status"], "report": str(output / "godot-report.json"),
                       "errors": report["errors"]}))
-    return 0 if report["status"] == "passed" else 1
+    return 0 if report["status"] == "passed" else exit_code
 
 
 if __name__ == "__main__":

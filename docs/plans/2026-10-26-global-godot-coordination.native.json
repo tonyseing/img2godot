@@ -1,0 +1,1144 @@
+{
+  "schema": 1,
+  "status": "READY_FROZEN_NATIVE_SCOPE_ONLY",
+  "inspection": "Saved artifacts and byte hashing only; no engine, tests, window driving or deployment.",
+  "pins": {
+    "/Users/tonyseing/workspace/img2godot-deploy/runtime/godot_coordinator.py": {
+      "recorded_sha256": "3dae7bce79f7dc418e1b23b21b920d0dfd0727c2f31eecba7357a0f3fbf3a5fb",
+      "current_sha256": "3dae7bce79f7dc418e1b23b21b920d0dfd0727c2f31eecba7357a0f3fbf3a5fb",
+      "matches": true
+    },
+    "/Users/tonyseing/.local/share/godot/4.5.1-stable/Godot.app/Contents/MacOS/Godot": {
+      "recorded_sha256": "0d214c6c85e47e7060ac13b035b404ce4dda653992503914963e149a45cd0dca",
+      "current_sha256": "0d214c6c85e47e7060ac13b035b404ce4dda653992503914963e149a45cd0dca",
+      "matches": true
+    },
+    "/Users/tonyseing/orca/workspaces/chase3d/global-godot-coordination/game/core/park_window.gd": {
+      "recorded_sha256": "98af8bba7849795529b0e625805efeb7c7bebb8282aaaae138ee5fc116ebfafa",
+      "current_sha256": "98af8bba7849795529b0e625805efeb7c7bebb8282aaaae138ee5fc116ebfafa",
+      "matches": true
+    },
+    "/Users/tonyseing/orca/workspaces/chase3d/global-godot-coordination/native/tools/godot_toolchain_pins.json": {
+      "recorded_sha256": "8dc0b44f60e08e1c6e57784c7240e002dcbcaf7fcff31ba6477959df35058175",
+      "current_sha256": "8dc0b44f60e08e1c6e57784c7240e002dcbcaf7fcff31ba6477959df35058175",
+      "matches": true
+    },
+    "/Users/tonyseing/orca/workspaces/chase3d/global-godot-coordination/tools/godot-no-focus.m": {
+      "recorded_sha256": "8a14d0234777715ef2402b35cf8a28e166d8889fc871506161ce7bb20f4415c3",
+      "current_sha256": "8a14d0234777715ef2402b35cf8a28e166d8889fc871506161ce7bb20f4415c3",
+      "matches": true
+    },
+    "/Users/tonyseing/orca/workspaces/chase3d/global-godot-coordination/tools/godot-window.mjs": {
+      "recorded_sha256": "4eb0fd99f8f791086a909e333b54aa34d6ed33ead9ec63767e7c2715dd2fca39",
+      "current_sha256": "4eb0fd99f8f791086a909e333b54aa34d6ed33ead9ec63767e7c2715dd2fca39",
+      "matches": true
+    },
+    "/Users/tonyseing/.omp/agent/sessions/-orca-workspaces-chase3d-white-pass-art-the-snowfield-set-trees-rocks-dri/2026-10-17T05-51-11-892Z_01a1486a-0c14-7626-a547-fd091111ba6c/local/godot-coordinator-native-smoke.py": {
+      "current_sha256": "bf68efaa9a4f1106c788d0420681bebb17e8c16d2a52a9f66a46de5ef0f9f9e1",
+      "historical_report_sha256s": [
+        "45e3f689f9848ed876c6ab48ffbe179e977abedcf04b0dbbbeae6efcb79b7259",
+        "bf68efaa9a4f1106c788d0420681bebb17e8c16d2a52a9f66a46de5ef0f9f9e1"
+      ]
+    },
+    "/Users/tonyseing/.local/share/godot/4.7.2-stable/Godot.app/Contents/MacOS/Godot": {
+      "recorded_sha256": "c7cccbf8fb143e34e02fd6521e09be2c2b974f0d5db080b19071c9c570718ccf",
+      "current_sha256": "c7cccbf8fb143e34e02fd6521e09be2c2b974f0d5db080b19071c9c570718ccf",
+      "matches": true
+    }
+  },
+  "reports": {
+    "parked": {
+      "path": "/tmp/issue256-offscreen-bf68efaa-7724d63daa64/parked/report.json",
+      "sha256": "318bd56c0b9b0e3ca9dfa762a5f381bc549d125e993e9bb597d55bdc17eab810",
+      "status": "passed",
+      "mode": "activation-suppressed 4.5.1 Compatibility/opengl3",
+      "probe_sha256_at_run": "bf68efaa9a4f1106c788d0420681bebb17e8c16d2a52a9f66a46de5ef0f9f9e1",
+      "cases": [
+        {
+          "case": "parked_capture_capacity_two_third_waits_and_no_focus",
+          "evidence_mode": "activation-suppressed capture; prearmed PID-only NSWorkspace observer plus canonical injected native guard",
+          "native_pids": [
+            85983,
+            87638,
+            89481
+          ],
+          "result": "passed",
+          "third_waiting_admission": {
+            "attached": [],
+            "blockers": [
+              {
+                "kind": "capture",
+                "reason": "both capture batch slots are occupied"
+              }
+            ],
+            "capture_root": "d6fb5a419526c09f5cac9f494acb51b0",
+            "child": null,
+            "created_ticks": null,
+            "deadline": 194402.425057291,
+            "exclusive_root": null,
+            "id": "d6fb5a419526c09f5cac9f494acb51b0",
+            "kind": "command",
+            "machine_root": "d6fb5a419526c09f5cac9f494acb51b0",
+            "mode": "capture",
+            "owner": {
+              "pid": 87839,
+              "start": "darwin:1793093315:884517"
+            },
+            "parent": null,
+            "pending": [],
+            "project": null,
+            "purpose": "native-smoke-afe28d842e0242a18a5f0e7261fb76ec:parked-c",
+            "sequence": 149,
+            "status": "waiting"
+          }
+        }
+      ],
+      "cleanup": {
+        "cleanup": [],
+        "cleanup_complete": true,
+        "cleanup_deadline_seconds": 12,
+        "cleanup_elapsed_seconds": 0.22099733402137645,
+        "cleanup_finalization_reserve_seconds": 2,
+        "cleanup_lingering_owned_admissions": [],
+        "cleanup_seconds_maximum": 12,
+        "cleanup_surviving_owned_processes": [],
+        "cleanup_unreaped_direct_children": [],
+        "cleanup_work_seconds_maximum": 10
+      },
+      "elapsed_seconds_before_final_serialization": 64.6318910419941,
+      "phase_result": {
+        "path": "/tmp/issue256-offscreen-bf68efaa-7724d63daa64/parked/phase-result.json",
+        "sha256": "9eed0d7c0f9f13a811f9597a6efcbf00e853c02c2531296e05db7d2f0201f541",
+        "record": {
+          "case_elapsed_seconds": 64.41089262499008,
+          "cleanup_complete": true,
+          "cleanup_elapsed_seconds_before_result_commit": 0.22545887500746176,
+          "phase_elapsed_seconds_before_result_commit": 64.63635120901745,
+          "report": "/private/tmp/issue256-offscreen-bf68efaa-7724d63daa64/parked/report.json",
+          "status": "passed"
+        }
+      },
+      "activation_observer": {
+        "all_observed_owned_engine_pids": [
+          83754,
+          84026,
+          84244,
+          84578,
+          85569,
+          85983,
+          86138,
+          87186,
+          87638,
+          88005,
+          89045,
+          89481
+        ],
+        "binary_sha256": "657866bffada1963914dd37561063c22fd5e33862a756e94109a0eaea528d02e",
+        "events": [
+          {
+            "event": "baseline",
+            "pid": 624
+          },
+          {
+            "event": "ready",
+            "pid": 84537
+          },
+          {
+            "event": "fenced",
+            "pid": 84537
+          }
+        ],
+        "owned_activation_violations": [],
+        "owned_native_pids": [
+          85983,
+          87638,
+          89481
+        ],
+        "ready_events": [
+          {
+            "event": "baseline",
+            "pid": 624
+          },
+          {
+            "event": "ready",
+            "pid": 84537
+          }
+        ],
+        "scope": "PID-only NSWorkspace activation notifications, no app/window control",
+        "source": "/private/tmp/issue256-offscreen-bf68efaa-7724d63daa64/parked/activation-observer.m",
+        "source_sha256": "3f090e03a836a0f756fa205c9d6360981196ac3ea0070ecca8cba66bfc45da0b",
+        "saved_source_hash_matches": true,
+        "saved_binary_sha256": "657866bffada1963914dd37561063c22fd5e33862a756e94109a0eaea528d02e"
+      }
+    },
+    "timeout": {
+      "path": "/tmp/issue256-offscreen-bf68efaa-7724d63daa64/timeout/report.json",
+      "sha256": "933c44d9d95db7ee047130dbd5e96f7d7dadcabf5fd2bcb0fa3bbcdff771a13f",
+      "status": "passed",
+      "mode": "activation-suppressed 4.5.1 Compatibility/opengl3",
+      "probe_sha256_at_run": "bf68efaa9a4f1106c788d0420681bebb17e8c16d2a52a9f66a46de5ef0f9f9e1",
+      "cases": [
+        {
+          "actual_return_elapsed_seconds": 20.6287021250173,
+          "case": "parked_native_total_timeout_releases_project_and_capture_without_touching_survivor",
+          "evidence_mode": "activation-suppressed PHONE capture; prearmed observer, native guard, real native PNG and owning-parent timeout cleanup",
+          "expected_exit_code": 124,
+          "included_cold_import": true,
+          "launcher_budget_seconds": 20,
+          "native_pid": 93766,
+          "native_project_admission_observed_live": {
+            "attached": [],
+            "blockers": [],
+            "capture_root": "fcd6a4ce276db3995d884c6ca623937c",
+            "child": {
+              "pid": 93766,
+              "start": "darwin:1793093374:328840"
+            },
+            "created_ticks": null,
+            "deadline": 194393.33708833298,
+            "exclusive_root": null,
+            "id": "01bd5f55cd6efcf9893ba43da572f75a",
+            "kind": "command",
+            "machine_root": "fcd6a4ce276db3995d884c6ca623937c",
+            "mode": "capture",
+            "owner": {
+              "pid": 93759,
+              "start": "darwin:1793093374:189113"
+            },
+            "parent": "fcd6a4ce276db3995d884c6ca623937c",
+            "pending": [],
+            "project": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/native-smoke-8d749d3dc1cb4012a56e107e004a6c3c-isnowjs0/capture-timed",
+            "purpose": "Parked native windowed capture",
+            "sequence": 223,
+            "status": "active"
+          },
+          "native_ready_elapsed_seconds": 19.35123295901576,
+          "outer_safety_budget_seconds": 32,
+          "released_native_project_admission_id": "01bd5f55cd6efcf9893ba43da572f75a",
+          "replacement_native_pid": 95661,
+          "result": "passed",
+          "survivor_pid": 91963,
+          "unrelated_fixture_source_hashes": {
+            "park_window.gd": "98af8bba7849795529b0e625805efeb7c7bebb8282aaaae138ee5fc116ebfafa",
+            "project.godot": "58ca1e4d6078e3d5f23d39719e3445a9132a382eeb5efff1f2b29b4199c19128",
+            "smoke.gd": "03f8f2dac3740a9824f00b53ac56c92cddb917b12a4a23dac891a147e6f0c6dd"
+          }
+        }
+      ],
+      "cleanup": {
+        "cleanup": [],
+        "cleanup_complete": true,
+        "cleanup_deadline_seconds": 12,
+        "cleanup_elapsed_seconds": 0.21579124999698251,
+        "cleanup_finalization_reserve_seconds": 2,
+        "cleanup_lingering_owned_admissions": [],
+        "cleanup_seconds_maximum": 12,
+        "cleanup_surviving_owned_processes": [],
+        "cleanup_unreaped_direct_children": [],
+        "cleanup_work_seconds_maximum": 10
+      },
+      "elapsed_seconds_before_final_serialization": 59.26861183298752,
+      "phase_result": {
+        "path": "/tmp/issue256-offscreen-bf68efaa-7724d63daa64/timeout/phase-result.json",
+        "sha256": "8f396e90ffec38e990b3324421520a61c6f8b51be3a8b8d706627002f01cf306",
+        "record": {
+          "case_elapsed_seconds": 59.052819832984824,
+          "cleanup_complete": true,
+          "cleanup_elapsed_seconds_before_result_commit": 0.21909045800566673,
+          "phase_elapsed_seconds_before_result_commit": 59.27190983298351,
+          "report": "/private/tmp/issue256-offscreen-bf68efaa-7724d63daa64/timeout/report.json",
+          "status": "passed"
+        }
+      },
+      "activation_observer": {
+        "all_observed_owned_engine_pids": [
+          89862,
+          90314,
+          91519,
+          91963,
+          92181,
+          92399,
+          93367,
+          93766,
+          95209,
+          95661
+        ],
+        "binary_sha256": "657866bffada1963914dd37561063c22fd5e33862a756e94109a0eaea528d02e",
+        "events": [
+          {
+            "event": "baseline",
+            "pid": 624
+          },
+          {
+            "event": "ready",
+            "pid": 90199
+          },
+          {
+            "event": "fenced",
+            "pid": 90199
+          }
+        ],
+        "owned_activation_violations": [],
+        "owned_native_pids": [
+          91963,
+          93766,
+          95661
+        ],
+        "ready_events": [
+          {
+            "event": "baseline",
+            "pid": 624
+          },
+          {
+            "event": "ready",
+            "pid": 90199
+          }
+        ],
+        "scope": "PID-only NSWorkspace activation notifications, no app/window control",
+        "source": "/private/tmp/issue256-offscreen-bf68efaa-7724d63daa64/timeout/activation-observer.m",
+        "source_sha256": "3f090e03a836a0f756fa205c9d6360981196ac3ea0070ecca8cba66bfc45da0b",
+        "saved_source_hash_matches": true,
+        "saved_binary_sha256": "657866bffada1963914dd37561063c22fd5e33862a756e94109a0eaea528d02e"
+      }
+    },
+    "headless": {
+      "path": "/tmp/issue256-native-3dae7bce-1d805bce9b51/headless/report.json",
+      "sha256": "ad98bb601c5e6c419524429ea8bd18f025d9fc2b87ac153140a8c972ea3b5971",
+      "status": "passed",
+      "mode": "headless 4.7.2",
+      "probe_sha256_at_run": "45e3f689f9848ed876c6ab48ffbe179e977abedcf04b0dbbbeae6efcb79b7259",
+      "cases": [
+        {
+          "case": "distinct_project_headless_overlap",
+          "pids": [
+            35804,
+            35868
+          ],
+          "result": "passed"
+        },
+        {
+          "case": "same_root_native_serialization",
+          "result": "passed",
+          "waiting_admission": {
+            "attached": [],
+            "blockers": [
+              {
+                "id": "66d902b8fc09ce2fb7b57cd493d71096",
+                "kind": "owner",
+                "mode": "shared",
+                "pid": 35977,
+                "project": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/native-smoke-57b6a67a84334e20be97b66923022f50-61jl2mjx/serialized-root",
+                "purpose": "native-smoke-57b6a67a84334e20be97b66923022f50:same-root-first"
+              }
+            ],
+            "capture_root": null,
+            "child": null,
+            "created_ticks": null,
+            "deadline": 189685.459977708,
+            "exclusive_root": null,
+            "id": "137bcf6f78e52e45b9e5e6c3dc643c53",
+            "kind": "command",
+            "machine_root": "137bcf6f78e52e45b9e5e6c3dc643c53",
+            "mode": "shared",
+            "owner": {
+              "pid": 36069,
+              "start": "darwin:1793088613:956660"
+            },
+            "parent": null,
+            "pending": [],
+            "project": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/native-smoke-57b6a67a84334e20be97b66923022f50-61jl2mjx/serialized-root",
+            "purpose": "native-smoke-57b6a67a84334e20be97b66923022f50:same-root-second",
+            "sequence": 11,
+            "status": "waiting"
+          }
+        },
+        {
+          "case": "exclusive_waiter_blocks_new_shared_until_drain",
+          "exclusive_sequence": 13,
+          "late_shared_sequence": 14,
+          "result": "passed"
+        },
+        {
+          "case": "native_nonzero_propagates_and_releases_project",
+          "expected_code": 23,
+          "result": "passed"
+        },
+        {
+          "case": "running_native_timeout_cleans_only_owned_processes",
+          "expected_code": 124,
+          "result": "passed",
+          "survivor_native_pid": 36678,
+          "timed_native_pid": 36742
+        },
+        {
+          "case": "context_owner_does_not_hide_unleased_native_sibling",
+          "context_admission_id": "794ec1c8f42d576e0d1fc9476433f19a",
+          "controlled_native_foreign_record": {
+            "binary": "/Users/tonyseing/.local/share/godot/4.7.2-stable/Godot.app/Contents/MacOS/Godot",
+            "capture_batch": false,
+            "kind": "engine",
+            "pid": 37412,
+            "project": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/native-smoke-57b6a67a84334e20be97b66923022f50-61jl2mjx/security-controlled-legacy-root",
+            "reason": "unmanaged engine",
+            "start": "darwin:1793088631:147390"
+          },
+          "controlled_native_pid": 37412,
+          "result": "passed",
+          "same_root_waiting_admission": {
+            "attached": [],
+            "blockers": [
+              {
+                "binary": "/Users/tonyseing/.local/share/godot/4.7.2-stable/Godot.app/Contents/MacOS/Godot",
+                "capture_batch": false,
+                "kind": "engine",
+                "pid": 37412,
+                "project": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/native-smoke-57b6a67a84334e20be97b66923022f50-61jl2mjx/security-controlled-legacy-root",
+                "reason": "unmanaged engine",
+                "start": "darwin:1793088631:147390"
+              }
+            ],
+            "capture_root": null,
+            "child": null,
+            "created_ticks": null,
+            "deadline": 189697.31104,
+            "exclusive_root": null,
+            "id": "1109a1d222187feeb4b0ac62a2faebcb",
+            "kind": "command",
+            "machine_root": "794ec1c8f42d576e0d1fc9476433f19a",
+            "mode": "shared",
+            "owner": {
+              "pid": 37423,
+              "start": "darwin:1793088631:535849"
+            },
+            "parent": "794ec1c8f42d576e0d1fc9476433f19a",
+            "pending": [],
+            "project": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/native-smoke-57b6a67a84334e20be97b66923022f50-61jl2mjx/security-controlled-legacy-root",
+            "purpose": "native-smoke-57b6a67a84334e20be97b66923022f50:security-same-root-leaf",
+            "sequence": 21,
+            "status": "waiting"
+          }
+        }
+      ],
+      "cleanup": {
+        "cleanup": [],
+        "cleanup_complete": true,
+        "cleanup_deadline_seconds": 12,
+        "cleanup_elapsed_seconds": 0.22520820898353122,
+        "cleanup_finalization_reserve_seconds": 2,
+        "cleanup_lingering_owned_admissions": [],
+        "cleanup_seconds_maximum": 12,
+        "cleanup_surviving_owned_processes": [],
+        "cleanup_unreaped_direct_children": [],
+        "cleanup_work_seconds_maximum": 10
+      },
+      "elapsed_seconds_before_final_serialization": 25.534213707986055,
+      "phase_result": {
+        "path": "/tmp/issue256-native-3dae7bce-1d805bce9b51/headless/phase-result.json",
+        "sha256": "480e1f5b194819297fbbada7342bda4a5a982fe8c0dec04f003b17085a049ac5",
+        "record": {
+          "case_elapsed_seconds": 25.309002833004342,
+          "cleanup_complete": true,
+          "cleanup_elapsed_seconds_before_result_commit": 0.22948720899876207,
+          "phase_elapsed_seconds_before_result_commit": 25.53848691697931,
+          "report": "/private/tmp/issue256-native-3dae7bce-1d805bce9b51/headless/report.json",
+          "status": "passed"
+        }
+      }
+    },
+    "failed_bg150_parked": {
+      "path": "/tmp/issue256-native-3dae7bce-1d805bce9b51/parked/report.json",
+      "sha256": "c93964d3e4c81e64eb0af615e187fbc24ee868b1309c9fec60155f212da950bb",
+      "status": "failed",
+      "mode": "activation-suppressed 4.5.1 Compatibility/opengl3",
+      "probe_sha256_at_run": "45e3f689f9848ed876c6ab48ffbe179e977abedcf04b0dbbbeae6efcb79b7259",
+      "cases": [],
+      "cleanup": {
+        "cleanup": [],
+        "cleanup_complete": true,
+        "cleanup_deadline_seconds": 12,
+        "cleanup_elapsed_seconds": 0.22783337501459755,
+        "cleanup_finalization_reserve_seconds": 2,
+        "cleanup_lingering_owned_admissions": [],
+        "cleanup_seconds_maximum": 12,
+        "cleanup_surviving_owned_processes": [],
+        "cleanup_unreaped_direct_children": [],
+        "cleanup_work_seconds_maximum": 10
+      },
+      "elapsed_seconds_before_final_serialization": 65.95633470799658,
+      "phase_result": {
+        "path": "/tmp/issue256-native-3dae7bce-1d805bce9b51/parked/phase-result.json",
+        "sha256": "3d0a7b9ae11526c09a86a8670a55c9bb4e0eee8074b169e333c8d42e058bb125",
+        "record": {
+          "case_elapsed_seconds": 65.72849641699577,
+          "cleanup_complete": true,
+          "cleanup_elapsed_seconds_before_result_commit": 0.23182970800553448,
+          "phase_elapsed_seconds_before_result_commit": 65.96032558300067,
+          "report": "/private/tmp/issue256-native-3dae7bce-1d805bce9b51/parked/report.json",
+          "status": "failed"
+        }
+      },
+      "error": "Traceback (most recent call last):\n  File \"/Users/tonyseing/.omp/agent/sessions/-orca-workspaces-chase3d-white-pass-art-the-snowfield-set-trees-rocks-dri/2026-10-17T05-51-11-892Z_01a1486a-0c14-7626-a547-fd091111ba6c/local/godot-coordinator-native-smoke.py\", line 1158, in main\n    probe.captures()\n    ~~~~~~~~~~~~~~^^\n  File \"/Users/tonyseing/.omp/agent/sessions/-orca-workspaces-chase3d-white-pass-art-the-snowfield-set-trees-rocks-dri/2026-10-17T05-51-11-892Z_01a1486a-0c14-7626-a547-fd091111ba6c/local/godot-coordinator-native-smoke.py\", line 849, in captures\n    raise ProbeError('owned capture root window was not parked/no-focus/borderless')\nProbeError: owned capture root window was not parked/no-focus/borderless\n",
+      "timeout_phase": "NOT_RUN",
+      "activation_observer": {
+        "all_observed_owned_engine_pids": [
+          37887,
+          38101,
+          38292,
+          39493,
+          39930,
+          40123,
+          41490,
+          42818,
+          43272
+        ],
+        "binary_sha256": "657866bffada1963914dd37561063c22fd5e33862a756e94109a0eaea528d02e",
+        "events": [
+          {
+            "event": "baseline",
+            "pid": 624
+          },
+          {
+            "event": "ready",
+            "pid": 38606
+          },
+          {
+            "event": "fenced",
+            "pid": 38606
+          }
+        ],
+        "owned_activation_violations": [],
+        "owned_native_pids": [
+          39930,
+          41490,
+          43272
+        ],
+        "ready_events": [
+          {
+            "event": "baseline",
+            "pid": 624
+          },
+          {
+            "event": "ready",
+            "pid": 38606
+          }
+        ],
+        "scope": "PID-only NSWorkspace activation notifications, no app/window control",
+        "source": "/private/tmp/issue256-native-3dae7bce-1d805bce9b51/parked/activation-observer.m",
+        "source_sha256": "3f090e03a836a0f756fa205c9d6360981196ac3ea0070ecca8cba66bfc45da0b",
+        "saved_source_hash_matches": true,
+        "saved_binary_sha256": "657866bffada1963914dd37561063c22fd5e33862a756e94109a0eaea528d02e"
+      }
+    }
+  },
+  "captures": [
+    {
+      "phase": "parked",
+      "name": "parked-a",
+      "png_path": "/tmp/issue256-offscreen-bf68efaa-7724d63daa64/parked/parked-a.png",
+      "png_sha256": "03b056a41a727c859f3bf7618a6d7ec75f2b0a7f94f062584756ef601270e3e4",
+      "png_signature_valid": true,
+      "ihdr_valid": true,
+      "dimensions": [
+        844,
+        390
+      ],
+      "matches_requested": true,
+      "matches_report_hash": true,
+      "native": {
+        "display_server": "macOS",
+        "engine_arguments": [
+          "--script",
+          "res://smoke.gd"
+        ],
+        "executable": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/chase3d-godot-no-focus-Yb4VOn/Godot.app/Contents/MacOS/Godot",
+        "mode": "activation-suppressed capture",
+        "pid": 85983,
+        "project": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/native-smoke-afe28d842e0242a18a5f0e7261fb76ec-lrk6nt4u/capture-a/",
+        "rendering_driver": "opengl3",
+        "rendering_method": "gl_compatibility",
+        "requested_rendering_driver": "opengl3",
+        "requested_rendering_method": "gl_compatibility",
+        "screen_count": 1,
+        "screen_rects": [
+          [
+            0,
+            0,
+            3600,
+            2338
+          ]
+        ],
+        "tag": "native-smoke-afe28d842e0242a18a5f0e7261fb76ec:parked-a",
+        "ticks_usec": 698507,
+        "version": {
+          "build": "official",
+          "hash": "f62fdbde15035c5576dad93e586201f4d41ef0cb",
+          "hex": 263425,
+          "major": 4,
+          "minor": 5,
+          "patch": 1,
+          "status": "stable",
+          "string": "4.5.1-stable (official)",
+          "timestamp": 0
+        },
+        "window_borderless": true,
+        "window_no_focus": true,
+        "window_position": "(-60000, -30000)",
+        "window_rect": [
+          -60000,
+          -30000,
+          844,
+          390
+        ],
+        "window_size": "(844, 390)"
+      },
+      "native_identity": {
+        "arguments": [
+          "/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/chase3d-godot-no-focus-Yb4VOn/Godot.app/Contents/MacOS/Godot",
+          "--path",
+          "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/native-smoke-afe28d842e0242a18a5f0e7261fb76ec-lrk6nt4u/capture-a",
+          "--fixed-fps",
+          "60",
+          "--resolution",
+          "16x16",
+          "--rendering-method",
+          "gl_compatibility",
+          "--rendering-driver",
+          "opengl3",
+          "--script",
+          "res://smoke.gd",
+          "--",
+          "--park-window",
+          "--park-size=844x390"
+        ],
+        "binary": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/chase3d-godot-no-focus-Yb4VOn/Godot.app/Contents/MacOS/Godot",
+        "command": "/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/chase3d-godot-no-focus-Yb4VOn/Godot.app/Contents/MacOS/Godot --path /private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/native-smoke-afe28d842e0242a18a5f0e7261fb76ec-lrk6nt4u/capture-a --fixed-fps 60 --resolution 16x16 --rendering-method gl_compatibility --rendering-driver opengl3 --script res://smoke.gd -- --park-window --park-size=844x390",
+        "pid": 85983,
+        "ppid": 85976,
+        "start_identity": "darwin:1793093296:778386"
+      },
+      "project_admission_release": {
+        "absent_from": [
+          "active",
+          "waiting"
+        ],
+        "id": "d98f1af0db998542a39b4e77f1ea1115",
+        "observed_after_native_exit": true
+      },
+      "exit_code": 0,
+      "native_guard_exit_reported": true,
+      "all_measured_screens_disjoint": true
+    },
+    {
+      "phase": "parked",
+      "name": "parked-b",
+      "png_path": "/tmp/issue256-offscreen-bf68efaa-7724d63daa64/parked/parked-b.png",
+      "png_sha256": "00d993ecb59d29203d6b3c78c3c8497db072b4a941eb7cd3db98e2531fc40232",
+      "png_signature_valid": true,
+      "ihdr_valid": true,
+      "dimensions": [
+        1280,
+        800
+      ],
+      "matches_requested": true,
+      "matches_report_hash": true,
+      "native": {
+        "display_server": "macOS",
+        "engine_arguments": [
+          "--script",
+          "res://smoke.gd"
+        ],
+        "executable": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/chase3d-godot-no-focus-FeC5xh/Godot.app/Contents/MacOS/Godot",
+        "mode": "activation-suppressed capture",
+        "pid": 87638,
+        "project": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/native-smoke-afe28d842e0242a18a5f0e7261fb76ec-lrk6nt4u/capture-b/",
+        "rendering_driver": "opengl3",
+        "rendering_method": "gl_compatibility",
+        "requested_rendering_driver": "opengl3",
+        "requested_rendering_method": "gl_compatibility",
+        "screen_count": 1,
+        "screen_rects": [
+          [
+            0,
+            0,
+            3600,
+            2338
+          ]
+        ],
+        "tag": "native-smoke-afe28d842e0242a18a5f0e7261fb76ec:parked-b",
+        "ticks_usec": 620015,
+        "version": {
+          "build": "official",
+          "hash": "f62fdbde15035c5576dad93e586201f4d41ef0cb",
+          "hex": 263425,
+          "major": 4,
+          "minor": 5,
+          "patch": 1,
+          "status": "stable",
+          "string": "4.5.1-stable (official)",
+          "timestamp": 0
+        },
+        "window_borderless": true,
+        "window_no_focus": true,
+        "window_position": "(-60000, -30000)",
+        "window_rect": [
+          -60000,
+          -30000,
+          1280,
+          800
+        ],
+        "window_size": "(1280, 800)"
+      },
+      "native_identity": {
+        "arguments": [
+          "/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/chase3d-godot-no-focus-FeC5xh/Godot.app/Contents/MacOS/Godot",
+          "--path",
+          "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/native-smoke-afe28d842e0242a18a5f0e7261fb76ec-lrk6nt4u/capture-b",
+          "--fixed-fps",
+          "60",
+          "--resolution",
+          "16x16",
+          "--rendering-method",
+          "gl_compatibility",
+          "--rendering-driver",
+          "opengl3",
+          "--script",
+          "res://smoke.gd",
+          "--",
+          "--park-window",
+          "--park-size=1280x800"
+        ],
+        "binary": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/chase3d-godot-no-focus-FeC5xh/Godot.app/Contents/MacOS/Godot",
+        "command": "/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/chase3d-godot-no-focus-FeC5xh/Godot.app/Contents/MacOS/Godot --path /private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/native-smoke-afe28d842e0242a18a5f0e7261fb76ec-lrk6nt4u/capture-b --fixed-fps 60 --resolution 16x16 --rendering-method gl_compatibility --rendering-driver opengl3 --script res://smoke.gd -- --park-window --park-size=1280x800",
+        "pid": 87638,
+        "ppid": 87612,
+        "start_identity": "darwin:1793093314:380429"
+      },
+      "project_admission_release": {
+        "absent_from": [
+          "active",
+          "waiting"
+        ],
+        "id": "2dbf50fff6795eac7aa8ed169fd0f655",
+        "observed_after_native_exit": true
+      },
+      "exit_code": 0,
+      "native_guard_exit_reported": true,
+      "all_measured_screens_disjoint": true
+    },
+    {
+      "phase": "parked",
+      "name": "parked-c",
+      "png_path": "/tmp/issue256-offscreen-bf68efaa-7724d63daa64/parked/parked-c.png",
+      "png_sha256": "03b056a41a727c859f3bf7618a6d7ec75f2b0a7f94f062584756ef601270e3e4",
+      "png_signature_valid": true,
+      "ihdr_valid": true,
+      "dimensions": [
+        844,
+        390
+      ],
+      "matches_requested": true,
+      "matches_report_hash": true,
+      "native": {
+        "display_server": "macOS",
+        "engine_arguments": [
+          "--script",
+          "res://smoke.gd"
+        ],
+        "executable": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/chase3d-godot-no-focus-bTIvb2/Godot.app/Contents/MacOS/Godot",
+        "mode": "activation-suppressed capture",
+        "pid": 89481,
+        "project": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/native-smoke-afe28d842e0242a18a5f0e7261fb76ec-lrk6nt4u/capture-c/",
+        "rendering_driver": "opengl3",
+        "rendering_method": "gl_compatibility",
+        "requested_rendering_driver": "opengl3",
+        "requested_rendering_method": "gl_compatibility",
+        "screen_count": 1,
+        "screen_rects": [
+          [
+            0,
+            0,
+            3600,
+            2338
+          ]
+        ],
+        "tag": "native-smoke-afe28d842e0242a18a5f0e7261fb76ec:parked-c",
+        "ticks_usec": 648061,
+        "version": {
+          "build": "official",
+          "hash": "f62fdbde15035c5576dad93e586201f4d41ef0cb",
+          "hex": 263425,
+          "major": 4,
+          "minor": 5,
+          "patch": 1,
+          "status": "stable",
+          "string": "4.5.1-stable (official)",
+          "timestamp": 0
+        },
+        "window_borderless": true,
+        "window_no_focus": true,
+        "window_position": "(-60000, -30000)",
+        "window_rect": [
+          -60000,
+          -30000,
+          844,
+          390
+        ],
+        "window_size": "(844, 390)"
+      },
+      "native_identity": {
+        "arguments": [
+          "/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/chase3d-godot-no-focus-bTIvb2/Godot.app/Contents/MacOS/Godot",
+          "--path",
+          "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/native-smoke-afe28d842e0242a18a5f0e7261fb76ec-lrk6nt4u/capture-c",
+          "--fixed-fps",
+          "60",
+          "--resolution",
+          "16x16",
+          "--rendering-method",
+          "gl_compatibility",
+          "--rendering-driver",
+          "opengl3",
+          "--script",
+          "res://smoke.gd",
+          "--",
+          "--park-window",
+          "--park-size=844x390"
+        ],
+        "binary": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/chase3d-godot-no-focus-bTIvb2/Godot.app/Contents/MacOS/Godot",
+        "command": "/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/chase3d-godot-no-focus-bTIvb2/Godot.app/Contents/MacOS/Godot --path /private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/native-smoke-afe28d842e0242a18a5f0e7261fb76ec-lrk6nt4u/capture-c --fixed-fps 60 --resolution 16x16 --rendering-method gl_compatibility --rendering-driver opengl3 --script res://smoke.gd -- --park-window --park-size=844x390",
+        "pid": 89481,
+        "ppid": 89434,
+        "start_identity": "darwin:1793093333:425069"
+      },
+      "project_admission_release": {
+        "absent_from": [
+          "active",
+          "waiting"
+        ],
+        "id": "eda4eca818cec82f27f624a11d4b71fd",
+        "observed_after_native_exit": true
+      },
+      "exit_code": 0,
+      "native_guard_exit_reported": true,
+      "all_measured_screens_disjoint": true
+    },
+    {
+      "phase": "timeout",
+      "name": "parked-timeout-survivor",
+      "png_path": "/tmp/issue256-offscreen-bf68efaa-7724d63daa64/timeout/parked-timeout-survivor.png",
+      "png_sha256": "03b056a41a727c859f3bf7618a6d7ec75f2b0a7f94f062584756ef601270e3e4",
+      "png_signature_valid": true,
+      "ihdr_valid": true,
+      "dimensions": [
+        844,
+        390
+      ],
+      "matches_requested": true,
+      "matches_report_hash": true,
+      "native": {
+        "display_server": "macOS",
+        "engine_arguments": [
+          "--script",
+          "res://smoke.gd"
+        ],
+        "executable": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/chase3d-godot-no-focus-R9gZb9/Godot.app/Contents/MacOS/Godot",
+        "mode": "activation-suppressed capture",
+        "pid": 91963,
+        "project": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/native-smoke-8d749d3dc1cb4012a56e107e004a6c3c-isnowjs0/capture-survivor/",
+        "rendering_driver": "opengl3",
+        "rendering_method": "gl_compatibility",
+        "requested_rendering_driver": "opengl3",
+        "requested_rendering_method": "gl_compatibility",
+        "screen_count": 1,
+        "screen_rects": [
+          [
+            0,
+            0,
+            3600,
+            2338
+          ]
+        ],
+        "tag": "native-smoke-8d749d3dc1cb4012a56e107e004a6c3c:parked-timeout-survivor",
+        "ticks_usec": 589239,
+        "version": {
+          "build": "official",
+          "hash": "f62fdbde15035c5576dad93e586201f4d41ef0cb",
+          "hex": 263425,
+          "major": 4,
+          "minor": 5,
+          "patch": 1,
+          "status": "stable",
+          "string": "4.5.1-stable (official)",
+          "timestamp": 0
+        },
+        "window_borderless": true,
+        "window_no_focus": true,
+        "window_position": "(-60000, -30000)",
+        "window_rect": [
+          -60000,
+          -30000,
+          844,
+          390
+        ],
+        "window_size": "(844, 390)"
+      },
+      "native_identity": {
+        "arguments": [
+          "/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/chase3d-godot-no-focus-R9gZb9/Godot.app/Contents/MacOS/Godot",
+          "--path",
+          "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/native-smoke-8d749d3dc1cb4012a56e107e004a6c3c-isnowjs0/capture-survivor",
+          "--fixed-fps",
+          "60",
+          "--resolution",
+          "16x16",
+          "--rendering-method",
+          "gl_compatibility",
+          "--rendering-driver",
+          "opengl3",
+          "--script",
+          "res://smoke.gd",
+          "--",
+          "--park-window",
+          "--park-size=844x390"
+        ],
+        "binary": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/chase3d-godot-no-focus-R9gZb9/Godot.app/Contents/MacOS/Godot",
+        "command": "/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/chase3d-godot-no-focus-R9gZb9/Godot.app/Contents/MacOS/Godot --path /private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/native-smoke-8d749d3dc1cb4012a56e107e004a6c3c-isnowjs0/capture-survivor --fixed-fps 60 --resolution 16x16 --rendering-method gl_compatibility --rendering-driver opengl3 --script res://smoke.gd -- --park-window --park-size=844x390",
+        "pid": 91963,
+        "ppid": 91937,
+        "start_identity": "darwin:1793093355:133328"
+      },
+      "project_admission_release": {
+        "absent_from": [
+          "active",
+          "waiting"
+        ],
+        "id": "6ff70f1d2a5c959ecbcde448e8cadde9",
+        "observed_after_native_exit": true
+      },
+      "exit_code": 0,
+      "native_guard_exit_reported": true,
+      "all_measured_screens_disjoint": true
+    },
+    {
+      "phase": "timeout",
+      "name": "parked-timeout-native",
+      "png_path": "/tmp/issue256-offscreen-bf68efaa-7724d63daa64/timeout/parked-timeout-native.png",
+      "png_sha256": "03b056a41a727c859f3bf7618a6d7ec75f2b0a7f94f062584756ef601270e3e4",
+      "png_signature_valid": true,
+      "ihdr_valid": true,
+      "dimensions": [
+        844,
+        390
+      ],
+      "matches_requested": true,
+      "matches_report_hash": true,
+      "native": {
+        "display_server": "macOS",
+        "engine_arguments": [
+          "--script",
+          "res://smoke.gd"
+        ],
+        "executable": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/chase3d-godot-no-focus-a78aRw/Godot.app/Contents/MacOS/Godot",
+        "mode": "activation-suppressed capture",
+        "pid": 93766,
+        "project": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/native-smoke-8d749d3dc1cb4012a56e107e004a6c3c-isnowjs0/capture-timed/",
+        "rendering_driver": "opengl3",
+        "rendering_method": "gl_compatibility",
+        "requested_rendering_driver": "opengl3",
+        "requested_rendering_method": "gl_compatibility",
+        "screen_count": 1,
+        "screen_rects": [
+          [
+            0,
+            0,
+            3600,
+            2338
+          ]
+        ],
+        "tag": "native-smoke-8d749d3dc1cb4012a56e107e004a6c3c:parked-timeout-native",
+        "ticks_usec": 611209,
+        "version": {
+          "build": "official",
+          "hash": "f62fdbde15035c5576dad93e586201f4d41ef0cb",
+          "hex": 263425,
+          "major": 4,
+          "minor": 5,
+          "patch": 1,
+          "status": "stable",
+          "string": "4.5.1-stable (official)",
+          "timestamp": 0
+        },
+        "window_borderless": true,
+        "window_no_focus": true,
+        "window_position": "(-60000, -30000)",
+        "window_rect": [
+          -60000,
+          -30000,
+          844,
+          390
+        ],
+        "window_size": "(844, 390)"
+      },
+      "native_identity": {
+        "arguments": [
+          "/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/chase3d-godot-no-focus-a78aRw/Godot.app/Contents/MacOS/Godot",
+          "--path",
+          "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/native-smoke-8d749d3dc1cb4012a56e107e004a6c3c-isnowjs0/capture-timed",
+          "--fixed-fps",
+          "60",
+          "--resolution",
+          "16x16",
+          "--rendering-method",
+          "gl_compatibility",
+          "--rendering-driver",
+          "opengl3",
+          "--script",
+          "res://smoke.gd",
+          "--",
+          "--park-window",
+          "--park-size=844x390"
+        ],
+        "binary": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/chase3d-godot-no-focus-a78aRw/Godot.app/Contents/MacOS/Godot",
+        "command": "/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/chase3d-godot-no-focus-a78aRw/Godot.app/Contents/MacOS/Godot --path /private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/native-smoke-8d749d3dc1cb4012a56e107e004a6c3c-isnowjs0/capture-timed --fixed-fps 60 --resolution 16x16 --rendering-method gl_compatibility --rendering-driver opengl3 --script res://smoke.gd -- --park-window --park-size=844x390",
+        "pid": 93766,
+        "ppid": 93759,
+        "start_identity": "darwin:1793093374:328840"
+      },
+      "project_admission_release": {
+        "absent_from": [
+          "active",
+          "waiting"
+        ],
+        "id": "01bd5f55cd6efcf9893ba43da572f75a",
+        "observed_after_native_exit": true
+      },
+      "exit_code": 124,
+      "native_guard_exit_reported": false,
+      "all_measured_screens_disjoint": true
+    },
+    {
+      "phase": "timeout",
+      "name": "parked-timeout-replacement",
+      "png_path": "/tmp/issue256-offscreen-bf68efaa-7724d63daa64/timeout/parked-timeout-replacement.png",
+      "png_sha256": "03b056a41a727c859f3bf7618a6d7ec75f2b0a7f94f062584756ef601270e3e4",
+      "png_signature_valid": true,
+      "ihdr_valid": true,
+      "dimensions": [
+        844,
+        390
+      ],
+      "matches_requested": true,
+      "matches_report_hash": true,
+      "native": {
+        "display_server": "macOS",
+        "engine_arguments": [
+          "--script",
+          "res://smoke.gd"
+        ],
+        "executable": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/chase3d-godot-no-focus-orQFKB/Godot.app/Contents/MacOS/Godot",
+        "mode": "activation-suppressed capture",
+        "pid": 95661,
+        "project": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/native-smoke-8d749d3dc1cb4012a56e107e004a6c3c-isnowjs0/capture-timed/",
+        "rendering_driver": "opengl3",
+        "rendering_method": "gl_compatibility",
+        "requested_rendering_driver": "opengl3",
+        "requested_rendering_method": "gl_compatibility",
+        "screen_count": 1,
+        "screen_rects": [
+          [
+            0,
+            0,
+            3600,
+            2338
+          ]
+        ],
+        "tag": "native-smoke-8d749d3dc1cb4012a56e107e004a6c3c:parked-timeout-replacement",
+        "ticks_usec": 589686,
+        "version": {
+          "build": "official",
+          "hash": "f62fdbde15035c5576dad93e586201f4d41ef0cb",
+          "hex": 263425,
+          "major": 4,
+          "minor": 5,
+          "patch": 1,
+          "status": "stable",
+          "string": "4.5.1-stable (official)",
+          "timestamp": 0
+        },
+        "window_borderless": true,
+        "window_no_focus": true,
+        "window_position": "(-60000, -30000)",
+        "window_rect": [
+          -60000,
+          -30000,
+          844,
+          390
+        ],
+        "window_size": "(844, 390)"
+      },
+      "native_identity": {
+        "arguments": [
+          "/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/chase3d-godot-no-focus-orQFKB/Godot.app/Contents/MacOS/Godot",
+          "--path",
+          "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/native-smoke-8d749d3dc1cb4012a56e107e004a6c3c-isnowjs0/capture-timed",
+          "--fixed-fps",
+          "60",
+          "--resolution",
+          "16x16",
+          "--rendering-method",
+          "gl_compatibility",
+          "--rendering-driver",
+          "opengl3",
+          "--script",
+          "res://smoke.gd",
+          "--",
+          "--park-window",
+          "--park-size=844x390"
+        ],
+        "binary": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/chase3d-godot-no-focus-orQFKB/Godot.app/Contents/MacOS/Godot",
+        "command": "/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/chase3d-godot-no-focus-orQFKB/Godot.app/Contents/MacOS/Godot --path /private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/native-smoke-8d749d3dc1cb4012a56e107e004a6c3c-isnowjs0/capture-timed --fixed-fps 60 --resolution 16x16 --rendering-method gl_compatibility --rendering-driver opengl3 --script res://smoke.gd -- --park-window --park-size=844x390",
+        "pid": 95661,
+        "ppid": 95650,
+        "start_identity": "darwin:1793093393:277114"
+      },
+      "project_admission_release": {
+        "absent_from": [
+          "active",
+          "waiting"
+        ],
+        "id": "e7c326e6a55e5c0028dea2cbc89c7701",
+        "observed_after_native_exit": true
+      },
+      "exit_code": 0,
+      "native_guard_exit_reported": true,
+      "all_measured_screens_disjoint": true
+    }
+  ],
+  "claim_limits": [
+    "No artwork acceptance or repinning",
+    "No strict <=20s return or hard real-time guarantee",
+    "No ongoing global-clear guarantee",
+    "Full-tree gate, immutable tag, clean-clone install, global-policy activation and installed-caller proof PENDING"
+  ],
+  "post_return_status": {
+    "authority": "Parent ACTUAL bg153 result supplied directly",
+    "active": [],
+    "waiting": [],
+    "foreign": [],
+    "legacy": [],
+    "scope": "post-bg152 snapshot only"
+  },
+  "wrapper": {
+    "job": "bg152",
+    "exit_code": 0,
+    "elapsed_seconds": 124.16
+  },
+  "historical_probe_limit": "Headless and failed bg150 reports attest 45e3f689f9848ed876c6ab48ffbe179e977abedcf04b0dbbbeae6efcb79b7259; the current same-path probe hashes bf68efaa9a4f1106c788d0420681bebb17e8c16d2a52a9f66a46de5ef0f9f9e1. Original historical bytes are available and freshly byte-hashed at the distinct archived path below. No old report or historical outcome was changed or repinned.",
+  "archived_historical_probe": {
+    "uri": "local://issue256-offscreen-probe-baseline.py",
+    "path": "/Users/tonyseing/.omp/agent/sessions/-orca-workspaces-chase3d-white-pass-art-the-snowfield-set-trees-rocks-dri/2026-10-17T05-51-11-892Z_01a1486a-0c14-7626-a547-fd091111ba6c/local/issue256-offscreen-probe-baseline.py",
+    "freshly_verified_sha256": "45e3f689f9848ed876c6ab48ffbe179e977abedcf04b0dbbbeae6efcb79b7259",
+    "matches_headless_and_failed_bg150_report_pin": true,
+    "scope": "Archived source corroboration only; current original path contains corrected bf68efaa probe."
+  }
+}

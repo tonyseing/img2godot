@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "issue": "chase3d#256",
+  "releaseTag": "godot-coordinator-2026-10-27",
+  "resolvedCommitLocation": "External project deployment receipt; intentionally not self-referential",
+  "runtimeSha256": "c4f749453a3dcbe6240d2f3e3b9578070abac1f4613f711cf6c2291d0415f6d9",
+  "scope": "Verified bounded shared-coordinator integration; not installation, global-policy activation, asset art, full-game visuals or device-budget acceptance",
+  "combinedGate": {
+    "job": "bg181",
+    "status": "FULL integration PASS",
+    "exitCode": 0,
+    "runnerWallSeconds": 3834.572,
+    "outerWallSecondsParentReported": 3834.69,
+    "source": "Parent-retained artifact://2503; local://issue256-final-combined-gate.log",
+    "archive": "2026-10-27-global-godot-coordination.full-gate.log",
+    "bytes": 285687,
+    "sha256": "b080b47e1409031f63c194c50b6f1e7a911b3f139e45f2ea97a8774ba2e4206d",
+    "modes": ["headless desktop 4.7.2", "headless phone 4.5.1", "activation-suppressed native captures", "engine-free tooling"]
+  },
+  "nativeArchives": [
+    {"path": "2026-10-27-global-godot-coordination.headless.json", "sha256": "b578cb4a399970ed6226b5547de77098675d551082ae0374aef23e38793e5069", "source": "/tmp/issue256-native-c4f749-5c6ab5abdc7a/headless/report.json", "claim": "Headless phase PASS only; enclosing interrupted wrapper remains failed"},
+    {"path": "2026-10-27-global-godot-coordination.parked.json", "sha256": "7302b65d2e9a702fb3fe711fa4cf4b0ac89f95fb5bdf285173fba8e484150036", "source": "/tmp/issue256-native-c4f749-direct-20261027a/parked/report.json", "claim": "Activation-suppressed parked/capture-capacity phase PASS only; adjacent timeout failure remains failed"},
+    {"path": "2026-10-27-global-godot-coordination.bg188.json", "sha256": "2e718d4a601be0aa7acb6f480335e2046c2de1e2a8933c2ff01fe40e9d024471", "source": "/tmp/issue256-timeout-live751c25-20261027a/report.json", "claim": "Separate activation-suppressed warm TOTAL60 capture-timeout-live scoped PASS"},
+    {"path": "2026-10-27-global-godot-coordination.bg188-return.json", "sha256": "9ff3f87c3980e913e362c243a29bbfebf5b4583dabd6a4e87e55768f934716d8", "source": "local://issue256-native-bg188-return.json", "claim": "Parent-recorded bg188 whole-wrapper exit 0, wall 107.00 seconds"}
+  ],
+  "limitations": [
+    "Historical native receipt 2026-10-26-global-godot-coordination.native.json remains unchanged and bound to its original runtime",
+    "Failed/interrupted attempts remain failed; passing phases do not relabel whole wrappers",
+    "TOTAL60 live-workload evidence does not prove TOTAL20, 20 seconds after native birth, 60 seconds native lifetime or hard real-time return",
+    "No-focus evidence is bounded observed activation-suppressed capture behavior, not a universal guarantee",
+    "Native reports retain original artifact paths; this receipt archives report bytes, not every referenced PNG",
+    "This release-metadata/archive operation launched no engine, ran no tests or installer and changed no installed copy or global policy"
+  ]
+}

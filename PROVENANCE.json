@@ -6,9 +6,22 @@
   "upstreamRevision": "d508b596cb221f1509f6e50ab68fce275a5cfb44",
   "license": "Apache-2.0",
   "upstreamCopyright": "Copyright 2026 hoainho",
-  "modifications": "Replace active skill and quickstart with agent-authored image-conditioned Blender GLB reconstruction and staged Godot acceptance; add canonical skill installer. Legacy Three.js resources retained for attribution, not default runtime.",
+  "modifications": "Replace active skill and quickstart with agent-authored image-conditioned Blender GLB reconstruction and staged Godot acceptance; add canonical skill installer and one external machine-wide Godot coordinator shared by fork and project callers. Legacy Three.js resources retained for attribution, not default runtime.",
   "canonicalSkillName": "game-asset-3d-pipeline",
   "legacySkillSha256": "0f500a6c410de5dc52b92d01a0f989074fe7d446f27aac9539d5e6f1b4fb6630",
-  "installationIdentity": "Installer records exact resource SHA-256 inventory and content digest in .img2godot-install.json. Pin the fork commit in deployment records after verification; upstreamRevision is the base, not the modified fork commit.",
+  "installationIdentity": "Installer records exact resource SHA-256 inventory/content digest, fork source repository/revision and external coordinator dependency in .img2godot-install.json. Pin the fork commit in deployment records after verification; upstreamRevision is the base, not the modified fork commit. Source archives require an explicit verified --source-revision; retain exact content hashes for uncommitted-source identity.",
+  "coordinator": {
+    "sourcePath": "runtime/godot_coordinator.py",
+    "installation": "~/.local/share/godot-coordinator/<source-sha256>/godot_coordinator.py",
+    "stableExecutable": "~/.local/bin/godot-coordinator",
+    "implementationCopiesInSkillOrProject": false,
+    "versionIdentity": "Each .godot-coordinator-install.json records the exact source repository, source revision, source path and SHA-256 of the unchanged installed runtime bytes. The version directory is that SHA-256; the skill inventory marker records the exact dependency.",
+    "releaseStatus": "Verified scoped coordinator integration; not asset art, full-game visual acceptance or device-budget acceptance. Resolve the immutable release tag to its exact commit and record that commit externally in deployment receipts.",
+    "releaseTag": "godot-coordinator-2026-10-27",
+    "runtimeSha256": "c4f749453a3dcbe6240d2f3e3b9578070abac1f4613f711cf6c2291d0415f6d9",
+    "acceptanceReceipt": "docs/plans/2026-10-27-global-godot-coordination.acceptance.json",
+    "historicalDeploymentTag": "godot-pipeline-2026-10-15",
+    "historicalDeploymentCommit": "b7a1bef85a543bde3b40c638295d4e599fa49743"
+  },
   "assetProvenance": "Each asset records immutable source paths/hashes, exact allowed texture processing algorithms and output hashes, authored spec/build hashes, measured GLB facts and hash-bound image reviews. Repository provenance does not replace asset provenance."
 }

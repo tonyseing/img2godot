@@ -71,15 +71,16 @@ adopts an unrelated process.
 
 ## Python contexts
 
-Import the externally resolved runtime, not a vendored copy:
+Import the externally resolved runtime, not a vendored copy. A Python lease
+provides admission, **not process supervision**. Prefer the canonical CLI
+`run` examples above for actual engine and launcher commands, with project
+ownership at the actual leaves.
 
-```python
-with coordinator.lease(mode="capture", purpose="batch", timeout=180) as batch:
-    with coordinator.lease(mode="shared", project=project, purpose="import") as leaf:
-        leaf.validate_command(command)
-        subprocess.run(command, env=leaf.env, timeout=min(120, leaf.remaining()), check=True)
-    subprocess.run(coordinated_launcher, env=batch.env, timeout=min(180, batch.remaining()), check=True)
-```
+Advanced Python embeddings must handle SIGTERM/SIGINT and the child-creation
+race, forward cancellation only through owned child handles, and await child
+and nested-family cleanup within the original absolute deadline. The context
+does not interrupt its Python body; a raw `subprocess.run` inside a lease does
+not by itself provide these lifecycle guarantees.
 
 The yielded `.env` is a complete child environment, anchored to the absolute
 state directory and coordinator path. Preserve its coordinator fields even
@@ -105,6 +106,21 @@ raises `LeaseTimeout` if expired. Clamp it against a finite phase budget before
 launching a child and when budgeting execution plus owned cleanup. The caller
 retains its real, unreaped `Popen` handle for cleanup. An expired context raises
 on exit and retains claims while its authenticated children remain alive.
+
+The asset verifier's `run(...)` consumer uses a rootless Python context only to
+carry a local capture batch's authenticated environment. A canonical CLI
+`run --mode shared --project ROOT` owns each actual headless leaf; a launcher
+instead receives a rootless shared CLI supervisor and claims its own native
+leaves. Neither wrapper claims an ancestor project. The CLI supervisor stays in
+the verifier's process group so an outer command owner can protect its cleanup.
+Scoped nonraising SIGTERM/SIGINT handlers forward cancellation to the retained
+direct supervisor and await canonical family cleanup within the original
+absolute deadline; the verifier never SIGKILLs a launcher group first.
+Timeout, signal cancellation and ordinary child statuses remain 124,
+128 + signal and the actual child code. Child stdout and stderr are retained
+separately (`*-stdout.log`, `*-stderr.log`), so admission diagnostics cannot
+become the parsed version line; both streams still participate in error checks
+and capture provenance retention.
 
 ## Indirect native launches
 

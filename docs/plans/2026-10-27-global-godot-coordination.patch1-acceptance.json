@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "issue": "chase3d#256",
+  "releaseTag": "godot-coordinator-2026-10-27.1",
+  "status": "SCOPED_REPAIR_ACCEPTED",
+  "firstCoordinatorRelease": {"tag": "godot-coordinator-2026-10-27", "commit": "0720d3ff8ee1616ee6458675a8f4c5e2c05a9ce7", "immutable": true},
+  "sourceSha256": {
+    "forge/godot/verify.py": "8431383b41c1497bf894938f6e26bedcd5ffa0f79b6679ae34f9755be175f789",
+    "forge/tests/test_godot_pipeline.py": "371a6b4fd5c4a37084343893bf570dd38b98174d9b8c633ab77d160a1c0ecd52",
+    "runtime/README.md": "f07765410afc83741024747f764e7e33281a0b328a952b15532527a1da282050",
+    "runtime/godot_coordinator.py": "c4f749453a3dcbe6240d2f3e3b9578070abac1f4613f711cf6c2291d0415f6d9"
+  },
+  "parentReportedRegressionHistory": [
+    {"job": "bg205", "kind": "neutral context RED", "failed": 2},
+    {"job": "bg206", "kind": "neutral launcher RED", "failed": 2},
+    {"job": "bg208", "kind": "focused repaired GREEN", "passed": 14, "wallSeconds": 13.143},
+    {"job": "bg209", "kind": "intermediate full-53 run", "failed": 1, "note": "Incidental observed-inner-124/expected-assertion-143 assertion removed in later source state; this run remains failed"},
+    {"job": "bg210", "kind": "frozen repaired full GREEN", "passed": 53, "wallSeconds": 19.353}
+  ],
+  "headlessConsumer": {
+    "job": "bg211",
+    "status": "BOTH_PASS",
+    "wallSecondsParentReported": 8.39,
+    "mode": "headless",
+    "archives": [
+      {"path": "2026-10-27-global-godot-coordination.patch1-headless-desktop.json", "sha256": "5b88ad73a426fd3933b1d3e6e4b92851bb1bff9e2eb00882c074f773784b80c4", "source": "/tmp/issue256-verifier8431383-desktop-20261027a/godot-report.json", "engine": "4.7.2"},
+      {"path": "2026-10-27-global-godot-coordination.patch1-headless-phone.json", "sha256": "162a6d42cfb260d007e197034b5561e4741f79715b5ad14c064e288dce11e4cc", "source": "/tmp/issue256-verifier8431383-phone-20261027a/godot-report.json", "engine": "4.5.1"}
+    ]
+  },
+  "independentReview": {
+    "verdict": "correct",
+    "confidence": 0.97,
+    "archives": [
+      {"path": "2026-10-27-global-godot-coordination.patch1-review.json", "sha256": "d98eadaafd4482a752c0f943fa4b29c05678f662303a611b8029e62571d540e5", "source": "local://issue256-verifier-supervision-review.json"},
+      {"path": "2026-10-27-global-godot-coordination.patch1-readme-review.json", "sha256": "4ce810f6d25afd01474f90fce07db495ed41f717ced757c6a72b33b5623f35b9", "source": "local://issue256-verifier-supervision-readme-closure.json"}
+    ]
+  },
+  "nativeSignalCleanup": {
+    "job": "bg212",
+    "mode": "headless",
+    "status": "PASS",
+    "wholeExitCode": 0,
+    "outerWallSecondsParentReported": 8.27,
+    "reportElapsedSecondsParentReported": 8.164147,
+    "cleanupComplete": true,
+    "enginePins": ["4.7.2", "4.5.1"],
+    "nativePids": [97953, 98146],
+    "outerAndDriverExitCode": 143,
+    "survivorPids": [97867, 98076],
+    "survivorsUnchangedThroughCancellation": true,
+    "foreignSignals": false,
+    "reportArchive": "2026-10-27-global-godot-coordination.patch1-native-cancel.json",
+    "reportSha256": "1d041a3e51369442dd876a124f2f7e0f564cf7b37965313843ada41a716980f2",
+    "reportSource": "/tmp/issue256-verifier-native-cancel-8431383-20261027a.json",
+    "rawEvidenceArchive": "2026-10-27-global-godot-coordination.patch1-native-evidence.tar.gz",
+    "rawEvidenceArchiveSha256": "a0908b386930c4a544d4a312e9534afd39052af94bfdcee85095b47b6ce0ed9d",
+    "rawEvidenceContents": ["complete original *-artifacts directory with status snapshots, configs, driver reports and logs", "original native cancellation report", "exact proof helper as issue256-patch1-native-helper.py"],
+    "helperSource": "local://issue256-verifier-native-cancel-smoke.py",
+    "helperSha256": "01cec4d212c425c2cea6b8bead09f4cb40025917841b0b9c575957f0b1679cdc"
+  },
+  "publicationGate": "Final metadata-source freeze, parent installer verification and explicit publication approval precede commit/tag/push; resolved commit recorded externally",
+  "limits": [
+    "Unchanged core permits legitimate reuse of its immutable runtime installation and original sidecar source revision; a new skill revision does not require rewriting immutable runtime provenance",
+    "Old core/native/full-gate receipts remain bound to their original source sets; no evidence is repinned to the repaired verifier",
+    "Headless success is not actual native signal-cleanup proof",
+    "No patch installation, global-policy activation, art, full-game visuals or device budgets are accepted here"
+  ]
+}

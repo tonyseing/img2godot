@@ -26,24 +26,33 @@ Prerequisites: Python 3, Pillow (image probing), Blender and the actual target G
 
 The historical verified deployment is **`godot-pipeline-2026-10-15`**, fork commit
 `b7a1bef85a543bde3b40c638295d4e599fa49743`. Keep that tag immutable; it predates the shared coordinator.
-The verified scoped coordinator release is **`godot-coordinator-2026-10-27`**. Its unchanged runtime
-`runtime/godot_coordinator.py` has SHA-256
-`c4f749453a3dcbe6240d2f3e3b9578070abac1f4613f711cf6c2291d0415f6d9`.
-This release accepts coordinator integration, not asset art, full-game visuals or device budgets.
-The historical pin does not provide global coordination. Install from a new clean clone of the immutable tag:
+The first scoped coordinator release **`godot-coordinator-2026-10-27`**, commit
+`0720d3ff8ee1616ee6458675a8f4c5e2c05a9ce7`, stays immutable. Its verifier was subsequently found
+to mishandle authenticated context and signal cleanup; do not use that pin for the repaired verifier.
+The repaired scoped coordinator release is **`godot-coordinator-2026-10-27.1`**.
+Its unchanged `runtime/godot_coordinator.py` SHA-256 is
+`c4f749453a3dcbe6240d2f3e3b9578070abac1f4613f711cf6c2291d0415f6d9`;
+the repaired `forge/godot/verify.py` SHA-256 is
+`8431383b41c1497bf894938f6e26bedcd5ffa0f79b6679ae34f9755be175f789`.
+Independent repair review closed and actual headless native SIGTERM cleanup passed on both engine pins.
+This accepts bounded coordinator/verifier integration, not asset art, full-game visuals or device budgets.
+Install from a new clean clone of the immutable tag:
 
 ```bash
-git clone --branch godot-coordinator-2026-10-27 --single-branch https://github.com/tonyseing/img2godot.git img2godot-coordinator-2026-10-27
-cd img2godot-coordinator-2026-10-27
-git checkout --detach godot-coordinator-2026-10-27
-git rev-parse 'godot-coordinator-2026-10-27^{commit}'
+git clone --branch godot-coordinator-2026-10-27.1 --single-branch https://github.com/tonyseing/img2godot.git img2godot-coordinator-2026-10-27.1
+cd img2godot-coordinator-2026-10-27.1
+git checkout --detach godot-coordinator-2026-10-27.1
+git rev-parse 'godot-coordinator-2026-10-27.1^{commit}'
 python3 install.py
 ```
 
 Record the resolved full commit ID externally with the installer's resource/runtime inventory.
 Do not replace the immutable tag with a moving branch or pass an invented source revision.
-See the [acceptance receipt](docs/plans/2026-10-27-global-godot-coordination.acceptance.json)
-and preserved full-gate log for the bounded release evidence.
+The [first-release receipt](docs/plans/2026-10-27-global-godot-coordination.acceptance.json)
+and full-gate log retain their original source identity; they are not repinned to the repaired verifier.
+See the [patch receipt](docs/plans/2026-10-27-global-godot-coordination.patch1-acceptance.json)
+and [implementation plan](docs/plans/2026-10-26-global-godot-coordination.md)
+for the distinct repair evidence, failed history and limits.
 
 The installer copies the fork skill/resources to `~/.agents/skills/game-asset-3d-pipeline` and creates the same-name
 Claude link under `~/.claude/skills/`. The one canonical coordinator implementation is installed **outside the

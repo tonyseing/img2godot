@@ -22,6 +22,7 @@ import struct
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 import zlib
 
@@ -92,10 +93,11 @@ def coordinator_module():
 
 
 @contextlib.contextmanager
-def coordinator_lease(*, mode="shared", project=None, timeout=None, purpose):
+def coordinator_lease(*, mode="shared", project=None, timeout=None, purpose, cancel=None):
     coordinator = coordinator_module()
     try:
-        with coordinator.lease(mode=mode, project=project, timeout=timeout, purpose=purpose) as context:
+        with coordinator.lease(mode=mode, project=project, timeout=timeout,
+                               purpose=purpose, cancel=cancel) as context:
             yield context
     except coordinator.CoordinatorError as exc:
         raise VerificationError(f"Shared Godot coordinator: {exc}", exit_code=exc.exit_code) from exc
@@ -107,50 +109,117 @@ def run(command: list[str], report: dict, run_dir: Path, label: str, mode: str,
     own_deadline = time.monotonic() + timeout
     deadline = min(own_deadline, deadline) if deadline is not None else own_deadline
     stdout_path = run_dir / f"{label}-stdout.log"
+    stderr_path = run_dir / f"{label}-stderr.log"
     log_path = run_dir / f"{label}-engine.log"
-    record = {"command": command, "stdout": str(stdout_path), "log": str(log_path), "mode": mode,
-              "project": str(project), "projectOwner": "launcher" if launcher else "verifier"}
+    record = {"command": command, "stdout": str(stdout_path), "stderr": str(stderr_path),
+              "log": str(log_path), "mode": mode, "project": str(project),
+              "projectOwner": "launcher" if launcher else "coordinator"}
     report["runs"].append(record)
+    received_signal = None
+    prior = {}
+
+    def interrupted(signum, _frame):
+        nonlocal received_signal
+        if received_signal is None:
+            received_signal = signum
+
+    def cancelled():
+        return received_signal is not None
+
+    # Contexts do not interrupt their Python bodies. Keep cancellation scoped
+    # to this call and nonraising while the canonical command owner drains.
+    if threading.current_thread() is threading.main_thread():
+        for signum in (signal.SIGTERM, signal.SIGINT):
+            prior[signum] = signal.signal(signum, interrupted)
     try:
-        # Only this owned process group is terminated on timeout, never a user's engine.
-        # A launcher claims its own import/native leaves; holding its project
-        # here would deadlock or wrongly let sibling engines share the cache.
-        admission = (contextlib.nullcontext(None) if launcher else
-                     coordinator_lease(project=project, timeout=timeout, purpose=f"img2godot {label}"))
-        with admission as context, stdout_path.open("w") as output:
-            remaining = min(deadline - time.monotonic(),
-                            context.remaining() if context is not None else math.inf)
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise VerificationError(f"{label} timed out before admission", exit_code=124)
+        # This rootless bridge preserves a local capture batch's authenticated
+        # environment. Only the canonical CLI at the actual leaf claims the
+        # project; a launcher supervisor must never claim its leaves' cache.
+        with coordinator_lease(timeout=remaining, purpose=f"img2godot {label} supervisor",
+                               cancel=cancelled) as context:
+            if context.deadline is not None:
+                deadline = min(deadline, context.deadline)
+            context.validate_command(command)
+            remaining = deadline - time.monotonic()
+            if received_signal is not None:
+                raise VerificationError(f"{label} interrupted by signal {received_signal}",
+                                        exit_code=128 + received_signal)
             if remaining <= 0:
                 raise VerificationError(f"{label} timed out before process creation", exit_code=124)
-            if context is not None:
-                context.validate_command(command)
-            process = subprocess.Popen(command, stdout=output, stderr=subprocess.STDOUT,
-                                       start_new_session=True, env=env if launcher else context.env)
-            try:
-                remaining = min(max(0, deadline - time.monotonic()),
-                                context.remaining() if context is not None else math.inf)
-                record["returncode"] = process.wait(timeout=remaining)
-            except subprocess.TimeoutExpired as exc:
-                raise VerificationError(f"{label} timed out; owned process group stopped", exit_code=124) from exc
-            finally:
-                # Keep the claim until our direct child is reaped on every path,
-                # including cancellation. Never signal a PID from a snapshot.
-                if process.poll() is None:
-                    try:
-                        os.killpg(process.pid, signal.SIGKILL)
-                    except ProcessLookupError:
-                        pass
-                    process.wait()
-                record["returncode"] = process.returncode
+            child_env = dict(env) if launcher and env is not None else dict(context.env)
+            child_env.update({key: value for key, value in context.env.items()
+                              if key == "GODOT_COORDINATOR" or key.startswith("GODOT_COORDINATOR_")})
+            # Carry the same absolute D through admission, payload and cleanup;
+            # --timeout alone would restart the budget after Python preparation.
+            child_env["GODOT_COORDINATOR_DEADLINE"] = str(deadline)
+            supervised = [sys.executable, str(Path(coordinator_module().__file__).resolve()),
+                          "run", "--mode", "shared", "--timeout", str(remaining),
+                          "--purpose", f"img2godot {label}"]
+            if not launcher:
+                supervised.extend(["--project", str(project)])
+            supervised.extend(["--", *command])
+            record["supervisorCommand"] = supervised
+            with stdout_path.open("w") as output, stderr_path.open("w") as diagnostics:
+                # Stay in our caller's group. An outer canonical owner can then
+                # protect this command supervisor while it drains separate
+                # native sessions. The canonical CLI creates the leaf's group.
+                process = subprocess.Popen(supervised, stdout=output, stderr=diagnostics,
+                                           env=child_env)
+                forwarded = False
+                try:
+                    while process.returncode is None:
+                        if received_signal is not None and not forwarded:
+                            process.send_signal(received_signal)
+                            forwarded = True
+                        remaining = deadline - time.monotonic()
+                        if remaining <= 0:
+                            raise VerificationError(
+                                f"{label} timed out; inspect {stderr_path}; "
+                                "unresolved canonical cleanup retains claims", exit_code=124)
+                        try:
+                            process.wait(timeout=min(.05, remaining))
+                        except subprocess.TimeoutExpired:
+                            pass
+                finally:
+                    # Never SIGKILL a supervisor before its launcher/native
+                    # family drains. Only this unreaped Popen handle is signal
+                    # authority; status and receipt PIDs are not.
+                    if process.returncode is None:
+                        process.terminate()
+                        while process.returncode is None and time.monotonic() < deadline:
+                            try:
+                                process.wait(timeout=min(.05, max(0, deadline - time.monotonic())))
+                            except subprocess.TimeoutExpired:
+                                pass
+                    record["returncode"] = process.returncode
+    except VerificationError as exc:
+        if received_signal is not None:
+            raise VerificationError(f"{label} interrupted by signal {received_signal}; inspect {stderr_path}",
+                                    exit_code=128 + received_signal) from exc
+        raise
     except OSError as exc:
         raise VerificationError(f"Cannot start {label}: {exc}") from exc
+    finally:
+        for signum, handler in prior.items():
+            signal.signal(signum, handler)
+    if received_signal is not None:
+        raise VerificationError(f"{label} interrupted by signal {received_signal}; inspect {stderr_path}",
+                                exit_code=128 + received_signal)
     text = stdout_path.read_text(errors="replace")
+    stderr = stderr_path.read_text(errors="replace")
+    code = record["returncode"]
+    if code != 0:
+        raise VerificationError(f"{label} failed (exit {code}); inspect {stdout_path} and {stderr_path}",
+                                exit_code=code if code >= 0 else 128 - code)
     engine_log = log_path.read_text(errors="replace") if log_path.is_file() else ""
     if label == "capture":
         # Preserve the native guard's logs/provenance beside our own evidence.
         for field, pattern in [("launcherLog", r"stdout\+stderr -> (.+)$"),
                                ("engineProvenance", r"engine provenance -> (.+?)(?: \(private.*)?$")]:
-            match = re.search(pattern, text, re.MULTILINE)
+            match = re.search(pattern, text + "\n" + stderr, re.MULTILINE)
             if match:
                 external = Path(match.group(1).strip())
                 if external.is_file():
@@ -162,10 +231,10 @@ def run(command: list[str], report: dict, run_dir: Path, label: str, mode: str,
                         engine_log += "\n" + retained.read_text(errors="replace")
         if "launcherLog" not in record or "engineProvenance" not in record:
             raise VerificationError("Launcher did not produce native guard log and engine provenance")
-        if "guard installed" not in text:
+        if "guard installed" not in text + "\n" + stderr:
             raise VerificationError("Launcher did not confirm native no-focus guard installation")
-    if record["returncode"] != 0 or ENGINE_ERRORS.search(text + "\n" + engine_log):
-        raise VerificationError(f"{label} failed (exit {record['returncode']}); inspect {stdout_path}")
+    if ENGINE_ERRORS.search(text + "\n" + stderr + "\n" + engine_log):
+        raise VerificationError(f"{label} engine error; inspect {stdout_path} and {stderr_path}")
     if label not in {"version"} and (not log_path.is_file() or not engine_log.strip()):
         raise VerificationError(f"{label} produced no Godot log artifact: {log_path}")
     return text

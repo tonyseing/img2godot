@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "issue": 256,
+  "review": "Read-only addendum closing the raw Python lifecycle example ambiguity",
+  "primaryReview": "local://issue256-verifier-supervision-review.json",
+  "parentApprovedDocumentationChange": {
+    "path": "/Users/tonyseing/workspace/img2godot-deploy/runtime/README.md",
+    "sha256ProvidedByRepairOwner": "f07765410afc83741024747f764e7e33281a0b328a952b15532527a1da282050",
+    "independentlyRecomputed": false,
+    "unchangedSourceIdentitiesPerOwner": {
+      "verify.py": "8431383b41c1497bf894938f6e26bedcd5ffa0f79b6679ae34f9755be175f789",
+      "test_godot_pipeline.py": "371a6b4fd5c4a37084343893bf570dd38b98174d9b8c633ab77d160a1c0ecd52",
+      "runtimeCore": "c4f749453a3dcbe6240d2f3e3b9578070abac1f4613f711cf6c2291d0415f6d9"
+    }
+  },
+  "evidence": {
+    "readRange": [72, 125],
+    "observations": [
+      "The prior raw with-lease/subprocess.run example has been removed.",
+      "The replacement explicitly states a Python lease provides admission, not process supervision, and prefers canonical CLI run for actual engine/launcher commands with ownership at the actual leaves.",
+      "Advanced embeddings must handle TERM/INT and child-creation races, forward only through owned child handles, and await child/nested-family cleanup within the original absolute deadline.",
+      "Raw subprocess.run inside a lease explicitly does not provide those lifecycle guarantees.",
+      "Validation-before-mutation and the distinction between command-domain validation versus ownership/deadline/liveness/signal authority are retained.",
+      "The verifier-specific rootless bridge/project-leaf/rootless-launcher description, no-supervisor-SIGKILL policy and separate stream/error/status handling remain accurate."
+    ]
+  },
+  "findings": [],
+  "documentationCaveatFromPrimaryReview": "Closed by the inspected parent-approved README-only clarification. The primary review remains historical evidence for its earlier README read; this addendum records the current documentation.",
+  "activity": "Only a ranged source read and this evidence artifact write. No commands, tests, engines, source edits, install/Git mutations, hashing or production registry access.",
+  "limits": "No new native verification, full release approval, patch tag approval or installed-runtime activation is implied. Installed0720 remains untouched and the immutable .1 release remains parent-owned.",
+  "overall_correctness": "correct",
+  "explanation": "The documentation now unambiguously separates admission from process supervision and directs ordinary actual-leaf callers to canonical CLI ownership. No remaining actionable finding was found in the scoped verifier code and clarified documentation review.",
+  "confidence": 0.97
+}

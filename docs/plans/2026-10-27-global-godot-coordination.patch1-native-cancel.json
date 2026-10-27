@@ -1,0 +1,539 @@
+{
+  "executed": true,
+  "outcome": "PASS",
+  "mode": "headless",
+  "cleanup": {
+    "complete": true,
+    "signals": [],
+    "errors": [],
+    "jobs": [
+      {
+        "role": "4.7.2-survivor",
+        "popen_pid": 97846,
+        "exit": 0,
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Users/tonyseing/.local/share/godot-coordinator/c4f749453a3dcbe6240d2f3e3b9578070abac1f4613f711cf6c2291d0415f6d9/godot_coordinator.py",
+          "run",
+          "--mode",
+          "shared",
+          "--timeout",
+          "38.84740374999819",
+          "--purpose",
+          "issue256-native-b_s89kl5 4.7.2-survivor",
+          "--project",
+          "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.7.2",
+          "--",
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.7.2/survivor.py",
+          "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.7.2/ready.json",
+          "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.7.2/stop",
+          "206180.764096666"
+        ],
+        "log": "/private/tmp/issue256-verifier-native-cancel-8431383-20261027a-artifacts/4.7.2-survivor-outer.log"
+      },
+      {
+        "role": "4.7.2-target",
+        "popen_pid": 97880,
+        "exit": 143,
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Users/tonyseing/.local/share/godot-coordinator/c4f749453a3dcbe6240d2f3e3b9578070abac1f4613f711cf6c2291d0415f6d9/godot_coordinator.py",
+          "run",
+          "--mode",
+          "shared",
+          "--timeout",
+          "27.999695916019846",
+          "--purpose",
+          "issue256-native-b_s89kl5 4.7.2-target",
+          "--",
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Users/tonyseing/.omp/agent/sessions/-orca-workspaces-chase3d-white-pass-art-the-snowfield-set-trees-rocks-dri/2026-10-17T05-51-11-892Z_01a1486a-0c14-7626-a547-fd091111ba6c/local/issue256-verifier-native-cancel-smoke.py",
+          "_driver",
+          "/private/tmp/issue256-verifier-native-cancel-8431383-20261027a-artifacts/4.7.2-run/driver-config.json"
+        ],
+        "log": "/private/tmp/issue256-verifier-native-cancel-8431383-20261027a-artifacts/4.7.2-target-outer.log"
+      },
+      {
+        "role": "4.5.1-survivor",
+        "popen_pid": 98072,
+        "exit": 0,
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Users/tonyseing/.local/share/godot-coordinator/c4f749453a3dcbe6240d2f3e3b9578070abac1f4613f711cf6c2291d0415f6d9/godot_coordinator.py",
+          "run",
+          "--mode",
+          "shared",
+          "--timeout",
+          "38.84551112502231",
+          "--purpose",
+          "issue256-native-b_s89kl5 4.5.1-survivor",
+          "--project",
+          "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.5.1",
+          "--",
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.5.1/survivor.py",
+          "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.5.1/ready.json",
+          "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.5.1/stop",
+          "206183.85695675"
+        ],
+        "log": "/private/tmp/issue256-verifier-native-cancel-8431383-20261027a-artifacts/4.5.1-survivor-outer.log"
+      },
+      {
+        "role": "4.5.1-target",
+        "popen_pid": 98108,
+        "exit": 143,
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Users/tonyseing/.local/share/godot-coordinator/c4f749453a3dcbe6240d2f3e3b9578070abac1f4613f711cf6c2291d0415f6d9/godot_coordinator.py",
+          "run",
+          "--mode",
+          "shared",
+          "--timeout",
+          "27.99976074998267",
+          "--purpose",
+          "issue256-native-b_s89kl5 4.5.1-target",
+          "--",
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Users/tonyseing/.omp/agent/sessions/-orca-workspaces-chase3d-white-pass-art-the-snowfield-set-trees-rocks-dri/2026-10-17T05-51-11-892Z_01a1486a-0c14-7626-a547-fd091111ba6c/local/issue256-verifier-native-cancel-smoke.py",
+          "_driver",
+          "/private/tmp/issue256-verifier-native-cancel-8431383-20261027a-artifacts/4.5.1-run/driver-config.json"
+        ],
+        "log": "/private/tmp/issue256-verifier-native-cancel-8431383-20261027a-artifacts/4.5.1-target-outer.log"
+      }
+    ],
+    "remaining_claims": [],
+    "exact_pid_rows": {
+      "97953": "",
+      "98146": "",
+      "97867": "",
+      "98076": ""
+    },
+    "private_fixtures_removed": true,
+    "elapsed_seconds": 0.1886676249851007
+  },
+  "cases": [
+    {
+      "engine_version_label": "4.7.2-stable",
+      "outcome": "PASS",
+      "case_deadline_monotonic": 206182.764096666,
+      "engine": "/Users/tonyseing/.local/share/godot/4.7.2-stable/Godot.app/Contents/MacOS/Godot",
+      "engine_sha256": "c7cccbf8fb143e34e02fd6521e09be2c2b974f0d5db080b19071c9c570718ccf",
+      "canonical_project": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/native-4.7.2",
+      "survivor_project": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.7.2",
+      "sources_before": {
+        "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/native-4.7.2/project.godot": "135900761f9a3912c3d5be9898499b00ae0398ebc91801fe77c4a30a17faa4f3",
+        "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/native-4.7.2/hold.gd": "7bbd0234d622e5ca76a190a83d7845e1882c97d602d2342af7e66c00c64f2df7",
+        "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.7.2/project.godot": "135900761f9a3912c3d5be9898499b00ae0398ebc91801fe77c4a30a17faa4f3",
+        "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.7.2/survivor.py": "c99c9d3b63899e3fb8ed719440d9f6dc63e8db1474e296524372618f626c53bd"
+      },
+      "survivor_ready": {
+        "pid": 97867
+      },
+      "survivor_witness": {
+        "id": "6965e1c819b68064944d7d8549cafe0d",
+        "sequence": 1139,
+        "status": "active",
+        "mode": "shared",
+        "purpose": "issue256-native-b_s89kl5 4.7.2-survivor",
+        "project": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.7.2",
+        "owner": {
+          "pid": 97846,
+          "start": "darwin:1793105126:551510"
+        },
+        "child": {
+          "pid": 97867,
+          "start": "darwin:1793105126:745419"
+        },
+        "attached": [],
+        "pending": [],
+        "kind": "command",
+        "created_ticks": null,
+        "deadline": 206181.821612416,
+        "parent": null,
+        "machine_root": "6965e1c819b68064944d7d8549cafe0d",
+        "exclusive_root": null,
+        "capture_root": null,
+        "blockers": []
+      },
+      "survivor_ps_before": "97867 97846 Tue Oct 27 08:45:26 2026     Ss   /opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python /private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.7.2/survivor.py /private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.7.2/ready.json /private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.7.2/stop 206180.764096666",
+      "outer_pid": 97880,
+      "outer_deadline_monotonic": 206171.465555166,
+      "readiness_deadline_monotonic": 206155.467574916,
+      "native_ready": {
+        "headless": true,
+        "pid": 97953
+      },
+      "native_witness": {
+        "id": "f97e4dd8fcc547a56b8a72e0129e3eda",
+        "sequence": 1142,
+        "status": "active",
+        "mode": "shared",
+        "purpose": "img2godot issue256-native-b_s89kl5-4.7.2-native",
+        "project": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/native-4.7.2",
+        "owner": {
+          "pid": 97927,
+          "start": "darwin:1793105127:755310"
+        },
+        "child": {
+          "pid": 97953,
+          "start": "darwin:1793105128:8511"
+        },
+        "attached": [],
+        "pending": [],
+        "kind": "command",
+        "created_ticks": null,
+        "deadline": 206169.75953775,
+        "parent": "99da591132ca7b7fbeb6f6b52646ccae",
+        "machine_root": "436b1128f98165bd6386ebe2baff4c1e",
+        "exclusive_root": null,
+        "capture_root": null,
+        "blockers": []
+      },
+      "native_ps_before": "97953 97927 Tue Oct 27 08:45:28 2026     Ss   /Users/tonyseing/.local/share/godot/4.7.2-stable/Godot.app/Contents/MacOS/Godot --headless --audio-driver Dummy --path /private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/native-4.7.2 --log-file /private/tmp/issue256-verifier-native-cancel-8431383-20261027a-artifacts/4.7.2-run/issue256-native-b_s89kl5-4.7.2-native-engine.log --script res://hold.gd",
+      "rootless_outer_witness": {
+        "id": "436b1128f98165bd6386ebe2baff4c1e",
+        "sequence": 1140,
+        "status": "active",
+        "mode": "shared",
+        "purpose": "issue256-native-b_s89kl5 4.7.2-target",
+        "project": null,
+        "owner": {
+          "pid": 97880,
+          "start": "darwin:1793105127:100644"
+        },
+        "child": {
+          "pid": 97903,
+          "start": "darwin:1793105127:294346"
+        },
+        "attached": [],
+        "pending": [],
+        "kind": "command",
+        "created_ticks": null,
+        "deadline": 206171.52583204102,
+        "parent": null,
+        "machine_root": "436b1128f98165bd6386ebe2baff4c1e",
+        "exclusive_root": null,
+        "capture_root": null,
+        "blockers": []
+      },
+      "signal": "SIGTERM",
+      "signal_authority": "actual unreaped direct outer CLI Popen only",
+      "outer_exit": 143,
+      "native_ps_after": "",
+      "target_claims_after_cancel": [],
+      "survivor_after_cancel": {
+        "id": "6965e1c819b68064944d7d8549cafe0d",
+        "sequence": 1139,
+        "status": "active",
+        "mode": "shared",
+        "purpose": "issue256-native-b_s89kl5 4.7.2-survivor",
+        "project": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.7.2",
+        "owner": {
+          "pid": 97846,
+          "start": "darwin:1793105126:551510"
+        },
+        "child": {
+          "pid": 97867,
+          "start": "darwin:1793105126:745419"
+        },
+        "attached": [],
+        "pending": [],
+        "kind": "command",
+        "created_ticks": null,
+        "deadline": 206181.821612416,
+        "parent": null,
+        "machine_root": "6965e1c819b68064944d7d8549cafe0d",
+        "exclusive_root": null,
+        "capture_root": null,
+        "blockers": []
+      },
+      "survivor_ps_after": "97867 97846 Tue Oct 27 08:45:26 2026     Ss   /opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python /private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.7.2/survivor.py /private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.7.2/ready.json /private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.7.2/stop 206180.764096666",
+      "sources_after": {
+        "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/native-4.7.2/project.godot": "135900761f9a3912c3d5be9898499b00ae0398ebc91801fe77c4a30a17faa4f3",
+        "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/native-4.7.2/hold.gd": "7bbd0234d622e5ca76a190a83d7845e1882c97d602d2342af7e66c00c64f2df7",
+        "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.7.2/project.godot": "135900761f9a3912c3d5be9898499b00ae0398ebc91801fe77c4a30a17faa4f3",
+        "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.7.2/survivor.py": "c99c9d3b63899e3fb8ed719440d9f6dc63e8db1474e296524372618f626c53bd"
+      },
+      "survivor_exit": 0,
+      "driver_report": {
+        "runs": [
+          {
+            "command": [
+              "/Users/tonyseing/.local/share/godot/4.7.2-stable/Godot.app/Contents/MacOS/Godot",
+              "--headless",
+              "--audio-driver",
+              "Dummy",
+              "--path",
+              "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/native-4.7.2",
+              "--log-file",
+              "/private/tmp/issue256-verifier-native-cancel-8431383-20261027a-artifacts/4.7.2-run/issue256-native-b_s89kl5-4.7.2-native-engine.log",
+              "--script",
+              "res://hold.gd"
+            ],
+            "stdout": "/private/tmp/issue256-verifier-native-cancel-8431383-20261027a-artifacts/4.7.2-run/issue256-native-b_s89kl5-4.7.2-native-stdout.log",
+            "stderr": "/private/tmp/issue256-verifier-native-cancel-8431383-20261027a-artifacts/4.7.2-run/issue256-native-b_s89kl5-4.7.2-native-stderr.log",
+            "log": "/private/tmp/issue256-verifier-native-cancel-8431383-20261027a-artifacts/4.7.2-run/issue256-native-b_s89kl5-4.7.2-native-engine.log",
+            "mode": "shared",
+            "project": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/native-4.7.2",
+            "projectOwner": "coordinator",
+            "supervisorCommand": [
+              "/opt/homebrew/opt/python@3.14/bin/python3.14",
+              "/Users/tonyseing/.local/share/godot-coordinator/c4f749453a3dcbe6240d2f3e3b9578070abac1f4613f711cf6c2291d0415f6d9/godot_coordinator.py",
+              "run",
+              "--mode",
+              "shared",
+              "--timeout",
+              "25.639206542022293",
+              "--purpose",
+              "img2godot issue256-native-b_s89kl5-4.7.2-native",
+              "--project",
+              "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/native-4.7.2",
+              "--",
+              "/Users/tonyseing/.local/share/godot/4.7.2-stable/Godot.app/Contents/MacOS/Godot",
+              "--headless",
+              "--audio-driver",
+              "Dummy",
+              "--path",
+              "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/native-4.7.2",
+              "--log-file",
+              "/private/tmp/issue256-verifier-native-cancel-8431383-20261027a-artifacts/4.7.2-run/issue256-native-b_s89kl5-4.7.2-native-engine.log",
+              "--script",
+              "res://hold.gd"
+            ],
+            "returncode": 143
+          }
+        ],
+        "loaded_verifier_sha256": "8431383b41c1497bf894938f6e26bedcd5ffa0f79b6679ae34f9755be175f789",
+        "error": "issue256-native-b_s89kl5-4.7.2-native interrupted by signal 15; inspect /private/tmp/issue256-verifier-native-cancel-8431383-20261027a-artifacts/4.7.2-run/issue256-native-b_s89kl5-4.7.2-native-stderr.log",
+        "driver_exit": 143
+      },
+      "survivor_exit_after_cleanup": 0,
+      "outer_exit_after_cleanup": 143
+    },
+    {
+      "engine_version_label": "4.5.1-stable",
+      "outcome": "PASS",
+      "case_deadline_monotonic": 206185.85695675,
+      "engine": "/Users/tonyseing/.local/share/godot/4.5.1-stable/Godot.app/Contents/MacOS/Godot",
+      "engine_sha256": "0d214c6c85e47e7060ac13b035b404ce4dda653992503914963e149a45cd0dca",
+      "canonical_project": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/native-4.5.1",
+      "survivor_project": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.5.1",
+      "sources_before": {
+        "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/native-4.5.1/project.godot": "135900761f9a3912c3d5be9898499b00ae0398ebc91801fe77c4a30a17faa4f3",
+        "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/native-4.5.1/hold.gd": "7bbd0234d622e5ca76a190a83d7845e1882c97d602d2342af7e66c00c64f2df7",
+        "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.5.1/project.godot": "135900761f9a3912c3d5be9898499b00ae0398ebc91801fe77c4a30a17faa4f3",
+        "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.5.1/survivor.py": "c99c9d3b63899e3fb8ed719440d9f6dc63e8db1474e296524372618f626c53bd"
+      },
+      "survivor_ready": {
+        "pid": 98076
+      },
+      "survivor_witness": {
+        "id": "f7fa518cb7b7006e960945da8f839410",
+        "sequence": 1143,
+        "status": "active",
+        "mode": "shared",
+        "purpose": "issue256-native-b_s89kl5 4.5.1-survivor",
+        "project": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.5.1",
+        "owner": {
+          "pid": 98072,
+          "start": "darwin:1793105129:646281"
+        },
+        "child": {
+          "pid": 98076,
+          "start": "darwin:1793105129:784758"
+        },
+        "attached": [],
+        "pending": [],
+        "kind": "command",
+        "created_ticks": null,
+        "deadline": 206184.91162558302,
+        "parent": null,
+        "machine_root": "f7fa518cb7b7006e960945da8f839410",
+        "exclusive_root": null,
+        "capture_root": null,
+        "blockers": []
+      },
+      "survivor_ps_before": "98076 98072 Tue Oct 27 08:45:29 2026     Ss   /opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python /private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.5.1/survivor.py /private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.5.1/ready.json /private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.5.1/stop 206183.85695675",
+      "outer_pid": 98108,
+      "outer_deadline_monotonic": 206174.510077333,
+      "readiness_deadline_monotonic": 206158.511770291,
+      "native_ready": {
+        "headless": true,
+        "pid": 98146
+      },
+      "native_witness": {
+        "id": "9affb62d0651967df83225930aba604c",
+        "sequence": 1146,
+        "status": "active",
+        "mode": "shared",
+        "purpose": "img2godot issue256-native-b_s89kl5-4.5.1-native",
+        "project": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/native-4.5.1",
+        "owner": {
+          "pid": 98139,
+          "start": "darwin:1793105130:525634"
+        },
+        "child": {
+          "pid": 98146,
+          "start": "darwin:1793105130:714609"
+        },
+        "attached": [],
+        "pending": [],
+        "kind": "command",
+        "created_ticks": null,
+        "deadline": 206172.749215541,
+        "parent": "2b08af8da2213ebf0c46f722038d3e65",
+        "machine_root": "77fc67d579953282ae8d3c2445cda392",
+        "exclusive_root": null,
+        "capture_root": null,
+        "blockers": []
+      },
+      "native_ps_before": "98146 98139 Tue Oct 27 08:45:30 2026     Ss   /Users/tonyseing/.local/share/godot/4.5.1-stable/Godot.app/Contents/MacOS/Godot --headless --audio-driver Dummy --path /private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/native-4.5.1 --log-file /private/tmp/issue256-verifier-native-cancel-8431383-20261027a-artifacts/4.5.1-run/issue256-native-b_s89kl5-4.5.1-native-engine.log --script res://hold.gd",
+      "rootless_outer_witness": {
+        "id": "77fc67d579953282ae8d3c2445cda392",
+        "sequence": 1144,
+        "status": "active",
+        "mode": "shared",
+        "purpose": "issue256-native-b_s89kl5 4.5.1-target",
+        "project": null,
+        "owner": {
+          "pid": 98108,
+          "start": "darwin:1793105130:145064"
+        },
+        "child": {
+          "pid": 98131,
+          "start": "darwin:1793105130:284480"
+        },
+        "attached": [],
+        "pending": [],
+        "kind": "command",
+        "created_ticks": null,
+        "deadline": 206174.56924583297,
+        "parent": null,
+        "machine_root": "77fc67d579953282ae8d3c2445cda392",
+        "exclusive_root": null,
+        "capture_root": null,
+        "blockers": []
+      },
+      "signal": "SIGTERM",
+      "signal_authority": "actual unreaped direct outer CLI Popen only",
+      "outer_exit": 143,
+      "native_ps_after": "",
+      "target_claims_after_cancel": [],
+      "survivor_after_cancel": {
+        "id": "f7fa518cb7b7006e960945da8f839410",
+        "sequence": 1143,
+        "status": "active",
+        "mode": "shared",
+        "purpose": "issue256-native-b_s89kl5 4.5.1-survivor",
+        "project": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.5.1",
+        "owner": {
+          "pid": 98072,
+          "start": "darwin:1793105129:646281"
+        },
+        "child": {
+          "pid": 98076,
+          "start": "darwin:1793105129:784758"
+        },
+        "attached": [],
+        "pending": [],
+        "kind": "command",
+        "created_ticks": null,
+        "deadline": 206184.91162558302,
+        "parent": null,
+        "machine_root": "f7fa518cb7b7006e960945da8f839410",
+        "exclusive_root": null,
+        "capture_root": null,
+        "blockers": []
+      },
+      "survivor_ps_after": "98076 98072 Tue Oct 27 08:45:29 2026     Ss   /opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python /private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.5.1/survivor.py /private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.5.1/ready.json /private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.5.1/stop 206183.85695675",
+      "sources_after": {
+        "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/native-4.5.1/project.godot": "135900761f9a3912c3d5be9898499b00ae0398ebc91801fe77c4a30a17faa4f3",
+        "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/native-4.5.1/hold.gd": "7bbd0234d622e5ca76a190a83d7845e1882c97d602d2342af7e66c00c64f2df7",
+        "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.5.1/project.godot": "135900761f9a3912c3d5be9898499b00ae0398ebc91801fe77c4a30a17faa4f3",
+        "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/survivor-4.5.1/survivor.py": "c99c9d3b63899e3fb8ed719440d9f6dc63e8db1474e296524372618f626c53bd"
+      },
+      "survivor_exit": 0,
+      "driver_report": {
+        "runs": [
+          {
+            "command": [
+              "/Users/tonyseing/.local/share/godot/4.5.1-stable/Godot.app/Contents/MacOS/Godot",
+              "--headless",
+              "--audio-driver",
+              "Dummy",
+              "--path",
+              "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/native-4.5.1",
+              "--log-file",
+              "/private/tmp/issue256-verifier-native-cancel-8431383-20261027a-artifacts/4.5.1-run/issue256-native-b_s89kl5-4.5.1-native-engine.log",
+              "--script",
+              "res://hold.gd"
+            ],
+            "stdout": "/private/tmp/issue256-verifier-native-cancel-8431383-20261027a-artifacts/4.5.1-run/issue256-native-b_s89kl5-4.5.1-native-stdout.log",
+            "stderr": "/private/tmp/issue256-verifier-native-cancel-8431383-20261027a-artifacts/4.5.1-run/issue256-native-b_s89kl5-4.5.1-native-stderr.log",
+            "log": "/private/tmp/issue256-verifier-native-cancel-8431383-20261027a-artifacts/4.5.1-run/issue256-native-b_s89kl5-4.5.1-native-engine.log",
+            "mode": "shared",
+            "project": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/native-4.5.1",
+            "projectOwner": "coordinator",
+            "supervisorCommand": [
+              "/opt/homebrew/opt/python@3.14/bin/python3.14",
+              "/Users/tonyseing/.local/share/godot-coordinator/c4f749453a3dcbe6240d2f3e3b9578070abac1f4613f711cf6c2291d0415f6d9/godot_coordinator.py",
+              "run",
+              "--mode",
+              "shared",
+              "--timeout",
+              "25.85857375001069",
+              "--purpose",
+              "img2godot issue256-native-b_s89kl5-4.5.1-native",
+              "--project",
+              "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/native-4.5.1",
+              "--",
+              "/Users/tonyseing/.local/share/godot/4.5.1-stable/Godot.app/Contents/MacOS/Godot",
+              "--headless",
+              "--audio-driver",
+              "Dummy",
+              "--path",
+              "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5/native-4.5.1",
+              "--log-file",
+              "/private/tmp/issue256-verifier-native-cancel-8431383-20261027a-artifacts/4.5.1-run/issue256-native-b_s89kl5-4.5.1-native-engine.log",
+              "--script",
+              "res://hold.gd"
+            ],
+            "returncode": 143
+          }
+        ],
+        "loaded_verifier_sha256": "8431383b41c1497bf894938f6e26bedcd5ffa0f79b6679ae34f9755be175f789",
+        "error": "issue256-native-b_s89kl5-4.5.1-native interrupted by signal 15; inspect /private/tmp/issue256-verifier-native-cancel-8431383-20261027a-artifacts/4.5.1-run/issue256-native-b_s89kl5-4.5.1-native-stderr.log",
+        "driver_exit": 143
+      },
+      "survivor_exit_after_cleanup": 0,
+      "outer_exit_after_cleanup": 143
+    }
+  ],
+  "scope": "actual frozen verifier.run TERM cancellation; two direct headless native leaves; neutral distinct-project survivor; not a launcher/native-guard, artwork, export, or full-gate proof",
+  "budgets_seconds": {
+    "each_case": 40.0,
+    "overall": 90.0,
+    "final_cleanup_shared": 8.0
+  },
+  "hard_realtime_claim": false,
+  "selector": "/Users/tonyseing/.local/bin/godot-coordinator",
+  "resolved_runtime": "/Users/tonyseing/.local/share/godot-coordinator/c4f749453a3dcbe6240d2f3e3b9578070abac1f4613f711cf6c2291d0415f6d9/godot_coordinator.py",
+  "runtime_sha256": "c4f749453a3dcbe6240d2f3e3b9578070abac1f4613f711cf6c2291d0415f6d9",
+  "verifier": "/Users/tonyseing/workspace/img2godot-deploy/forge/godot/verify.py",
+  "verifier_sha256": "8431383b41c1497bf894938f6e26bedcd5ffa0f79b6679ae34f9755be175f789",
+  "helper_sha256": "01cec4d212c425c2cea6b8bead09f4cb40025917841b0b9c575957f0b1679cdc",
+  "scrubbed_context_keys": [],
+  "fixtures": "/private/var/folders/2y/b4dzj06537b17zp9tt82q7tw0000gn/T/issue256-native-b_s89kl5",
+  "artifacts": "/private/tmp/issue256-verifier-native-cancel-8431383-20261027a-artifacts",
+  "verifier_sha256_after": "8431383b41c1497bf894938f6e26bedcd5ffa0f79b6679ae34f9755be175f789",
+  "runtime_sha256_after": "c4f749453a3dcbe6240d2f3e3b9578070abac1f4613f711cf6c2291d0415f6d9",
+  "selector_target_after": "/Users/tonyseing/.local/share/godot-coordinator/c4f749453a3dcbe6240d2f3e3b9578070abac1f4613f711cf6c2291d0415f6d9/godot_coordinator.py",
+  "helper_sha256_after": "01cec4d212c425c2cea6b8bead09f4cb40025917841b0b9c575957f0b1679cdc",
+  "engine_sha256_after": {
+    "4.7.2-stable": "c7cccbf8fb143e34e02fd6521e09be2c2b974f0d5db080b19071c9c570718ccf",
+    "4.5.1-stable": "0d214c6c85e47e7060ac13b035b404ce4dda653992503914963e149a45cd0dca"
+  },
+  "frozen_sources_unchanged": true,
+  "elapsed_seconds": 8.16414716700092
+}

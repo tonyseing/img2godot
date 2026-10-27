@@ -10,6 +10,7 @@ import struct
 import sys
 import tempfile
 import time
+import textwrap
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -384,8 +385,8 @@ class VerifierCoordinatorEdges(unittest.TestCase):
         with coordinator.lease(project=project, purpose="existing project owner"):
             with self.assertRaises(verify.VerificationError) as rejected:
                 verify.run(command, {"runs": []}, self.root, "version", "headless", project)
-        self.assertIsInstance(rejected.exception.__cause__, coordinator.CoordinatorError)
-        self.assertEqual(rejected.exception.exit_code, rejected.exception.__cause__.exit_code)
+        self.assertEqual(rejected.exception.exit_code, 2)
+        self.assertIn("already owned by an ancestor", (self.root / "version-stderr.log").read_text())
         self.assertFalse(spawned.exists())
 
     def test_missing_shared_coordinator_fails_closed_before_spawning(self):
@@ -452,6 +453,260 @@ class VerifierCoordinatorEdges(unittest.TestCase):
             if process.poll() is None:
                 process.kill()
                 process.communicate(timeout=3)
+
+    def _exercise_actual_verifier_family(self, *, launcher, action):
+        """Real verifier + canonical CLI, never an engine or a mocked lease.
+
+        Reuses the packet owner's neutral-child/stop-file pattern. The launcher
+        reproduces Node's actual topology: wrapper and canonical CLI share a
+        group, while the canonical CLI owns a separately-sessioned leaf.
+        """
+        project = self.root / "project"
+        project.mkdir()
+        leaf = self.root / "neutral_leaf.py"
+        leaf.write_text(textwrap.dedent("""\
+            import json, os, pathlib, sys, time
+            root = pathlib.Path(sys.argv[1])
+            receipt = root / 'leaf.json'
+            temporary = receipt.with_suffix('.tmp')
+            temporary.write_text(json.dumps({
+                'pid': os.getpid(), 'ppid': os.getppid(),
+                'pgid': os.getpgrp(), 'sid': os.getsid(0),
+                'deadline': os.environ.get('GODOT_COORDINATOR_DEADLINE'),
+            }))
+            temporary.replace(receipt)
+            end = time.monotonic() + 12
+            while time.monotonic() < end and not (root / 'stop').exists():
+                time.sleep(.02)
+            """))
+        wrapper = self.root / "neutral_launcher.py"
+        wrapper.write_text(textwrap.dedent("""\
+            import json, os, pathlib, signal, subprocess, sys, time
+            root = pathlib.Path(sys.argv[1])
+            child = None
+            received = None
+            def interrupted(signum, frame):
+                global received
+                received = signum
+                if child is not None and child.returncode is None:
+                    child.send_signal(signal.SIGTERM)
+            signal.signal(signal.SIGTERM, interrupted)
+            signal.signal(signal.SIGINT, interrupted)
+            child = subprocess.Popen([
+                sys.executable, os.environ['GODOT_COORDINATOR'],
+                'run', '--mode', 'shared', '--project', str(root / 'project'),
+                '--timeout', '10', '--purpose', 'neutral native-equivalent leaf',
+                '--', sys.executable, str(root / 'neutral_leaf.py'), str(root),
+            ])
+            receipt = root / 'launcher.json'
+            temporary = receipt.with_suffix('.tmp')
+            temporary.write_text(json.dumps({
+                'pid': os.getpid(), 'pgid': os.getpgrp(),
+                'coordinator': child.pid,
+            }))
+            temporary.replace(receipt)
+            if received is not None:
+                child.send_signal(signal.SIGTERM)
+            end = time.monotonic() + 12
+            while child.returncode is None:
+                if (root / 'stop').exists() or time.monotonic() >= end:
+                    interrupted(signal.SIGTERM, None)
+                try:
+                    child.wait(timeout=.02)
+                except subprocess.TimeoutExpired:
+                    pass
+            (root / 'launcher-drained.json').write_text(json.dumps({
+                'signal': received, 'returncode': child.returncode,
+            }))
+            raise SystemExit(child.returncode)
+            """))
+        driver = self.root / "neutral_verifier.py"
+        driver.write_text(textwrap.dedent(f"""\
+            import importlib.util, json, os, pathlib, sys
+            root = pathlib.Path(sys.argv[1])
+            spec = importlib.util.spec_from_file_location('actual_verifier', {str(Path(verify.__file__).resolve())!r})
+            verify = importlib.util.module_from_spec(spec)
+            sys.modules[spec.name] = verify
+            spec.loader.exec_module(verify)
+            command = [sys.executable, str(root / {'neutral_launcher.py' if launcher else 'neutral_leaf.py'!r}), str(root)]
+            report = {{'runs': []}}
+            try:
+                verify.run(command, report, root, 'version',
+                           {'activation-suppressed capture' if launcher else 'headless'!r},
+                           root / 'project', timeout={2 if launcher else 30},
+                           launcher={launcher!r}, env=dict(os.environ),
+                           deadline=float(os.environ['GODOT_COORDINATOR_DEADLINE']))
+            except verify.VerificationError as error:
+                (root / 'verifier-result.json').write_text(json.dumps({{
+                    'exit_code': error.exit_code, 'message': str(error), 'report': report,
+                }}))
+                raise SystemExit(error.exit_code)
+            """))
+        environment = {key: value for key, value in os.environ.items()
+                       if not key.startswith("GODOT_COORDINATOR_")}
+        environment.update({
+            "GODOT_COORDINATOR": str(self.runtime),
+            "GODOT_COORDINATOR_STATE_DIR": str(self.root / "state"),
+            "PYTHONDONTWRITEBYTECODE": "1",
+        })
+        command = [sys.executable, str(self.runtime), "run", "--mode", "capture",
+                   "--timeout", "4", "--purpose", "neutral verifier boundary",
+                   "--", sys.executable, str(driver), str(self.root)]
+        process = None
+        survivor = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(12)"],
+                                    start_new_session=True)
+        receipts = {}
+        started = time.monotonic()
+
+        def present(pid):
+            # Observation only. Snapshot PIDs are never termination authority.
+            try:
+                os.kill(pid, 0)
+            except ProcessLookupError:
+                return False
+            return True
+
+        try:
+            with (self.root / "boundary.log").open("w") as output:
+                process = subprocess.Popen(command, env=environment, stdout=output,
+                                           stderr=subprocess.STDOUT, start_new_session=True)
+                ready_end = started + 3
+                while not (self.root / "leaf.json").is_file():
+                    self.assertIsNone(process.poll(), "Actual verifier exited before leaf readiness")
+                    self.assertLess(time.monotonic(), ready_end, "Neutral leaf readiness timed out")
+                    time.sleep(.02)
+                receipts["leaf"] = json.loads((self.root / "leaf.json").read_text())
+                self.assertEqual(receipts["leaf"]["pid"], receipts["leaf"]["pgid"])
+                self.assertEqual(receipts["leaf"]["pid"], receipts["leaf"]["sid"])
+                if launcher:
+                    receipts["launcher"] = json.loads((self.root / "launcher.json").read_text())
+                    self.assertNotEqual(receipts["leaf"]["pgid"], receipts["launcher"]["pgid"])
+                    self.assertEqual(receipts["leaf"]["ppid"], receipts["launcher"]["coordinator"])
+                    state = json.loads((self.root / "state/state.json").read_text())
+                    claims = [record for record in state["records"]
+                              if record.get("project") == str(project.resolve())]
+                    self.assertEqual(len(claims), 1, "Launcher must not hold an ancestor project claim")
+                    self.assertEqual(claims[0]["kind"], "command")
+                if action != "timeout":
+                    process.send_signal(signal.SIGTERM if action == "sigterm" else signal.SIGINT)
+                process.wait(timeout=max(.1, started + 6 - time.monotonic()))
+            log = (self.root / "boundary.log").read_text()
+            self.assertEqual(process.returncode, {"timeout": 124, "sigterm": 143, "sigint": 130}[action], log)
+            drain_end = min(started + 7, time.monotonic() + 1)
+            while any(present(receipt["pid"]) for receipt in receipts.values()) and time.monotonic() < drain_end:
+                time.sleep(.02)
+            remaining = {name: receipt for name, receipt in receipts.items() if present(receipt["pid"])}
+            self.assertIsNone(survivor.poll(), "Unrelated test-owned survivor was terminated")
+            self.assertEqual(remaining, {}, "Actual verifier stranded its owned family\n" + log)
+            if launcher:
+                drained = json.loads((self.root / "launcher-drained.json").read_text())
+                self.assertEqual(drained["signal"], signal.SIGTERM, "Launcher forwarding was bypassed")
+            status = subprocess.run([sys.executable, str(self.runtime), "status", "--json"],
+                                    env=environment, capture_output=True, text=True, timeout=2)
+            self.assertEqual(status.returncode, 0, status.stderr)
+            state = json.loads(status.stdout)
+            self.assertEqual(state["active"], [], "Owned claims survived family cleanup")
+            self.assertEqual(state["waiting"], [])
+            self.assertLess(time.monotonic() - started, 8, "Cleanup extended the finite caller budget")
+        finally:
+            # RED must be safe too: cooperative stop reaches every neutral leaf,
+            # even if the broken verifier killed its owner before forwarding.
+            # Each fixture independently auto-expires within twelve seconds.
+            (self.root / "stop").touch()
+            if process is not None and process.poll() is None:
+                process.terminate()  # Only our actual, unreaped Popen handle.
+                try:
+                    process.wait(timeout=3)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.wait(timeout=2)
+            cleanup_end = started + 14
+            while any(present(receipt["pid"]) for receipt in receipts.values()) and time.monotonic() < cleanup_end:
+                time.sleep(.02)
+            if survivor.poll() is None:
+                survivor.terminate()
+            survivor.wait(timeout=2)
+
+    def test_actual_verifier_sigterm_drains_context_leaf(self):
+        self._exercise_actual_verifier_family(launcher=False, action="sigterm")
+
+    def test_actual_verifier_timeout_drains_context_leaf(self):
+        self._exercise_actual_verifier_family(launcher=False, action="timeout")
+
+    def test_actual_verifier_timeout_forwards_launcher_before_nested_leaf_cleanup(self):
+        self._exercise_actual_verifier_family(launcher=True, action="timeout")
+
+    def test_actual_verifier_sigterm_forwards_launcher_before_nested_leaf_cleanup(self):
+        self._exercise_actual_verifier_family(launcher=True, action="sigterm")
+
+    def test_actual_verifier_sigint_forwards_launcher_before_nested_leaf_cleanup(self):
+        self._exercise_actual_verifier_family(launcher=True, action="sigint")
+
+    def test_actual_verifier_preserves_nonzero_leaf_exit_code(self):
+        project = self.root / "project"
+        project.mkdir()
+        report = {"runs": []}
+        with self.assertRaises(verify.VerificationError) as failed:
+            verify.run([sys.executable, "-c", "raise SystemExit(23)"],
+                       report, self.root, "version", "headless", project, timeout=3)
+        self.assertEqual(failed.exception.exit_code, 23)
+        self.assertEqual(report["runs"][0]["returncode"], 23)
+
+    def test_contended_version_keeps_cli_diagnostics_out_of_child_stdout(self):
+        project = self.root / "project"
+        project.mkdir()
+        script = textwrap.dedent(f"""\
+            import json, pathlib, sys
+            from forge.godot import verify
+            root = pathlib.Path({str(self.root)!r})
+            report = {{'runs': []}}
+            text = verify.run([sys.executable, '-c', "print('4.5.1.synthetic')"],
+                              report, root, 'version', 'headless', root / 'project', timeout=5)
+            (root / 'version-result.json').write_text(json.dumps({{'text': text, 'report': report}}))
+            """)
+        environment = {key: value for key, value in os.environ.items()
+                       if not key.startswith("GODOT_COORDINATOR_")}
+        environment.update({
+            "GODOT_COORDINATOR": str(self.runtime),
+            "GODOT_COORDINATOR_STATE_DIR": str(self.root / "state"),
+            "PYTHONDONTWRITEBYTECODE": "1",
+        })
+        process = None
+        try:
+            with verify.coordinator_lease(project=project, timeout=5,
+                                          purpose="neutral contended version holder"):
+                process = subprocess.Popen([sys.executable, "-c", script],
+                                           cwd=Path(__file__).resolve().parents[2],
+                                           env=environment, stdout=subprocess.PIPE,
+                                           stderr=subprocess.PIPE, text=True,
+                                           start_new_session=True)
+                queued = False
+                end = time.monotonic() + 2
+                while time.monotonic() < end and process.poll() is None:
+                    state = json.loads((self.root / "state/state.json").read_text())
+                    queued = any(record["status"] == "waiting"
+                                 and record.get("project") == str(project.resolve())
+                                 for record in state["records"])
+                    if queued:
+                        break
+                    time.sleep(.02)
+                self.assertTrue(queued, "Version probe never exercised actual project contention")
+            stdout, stderr = process.communicate(timeout=4)
+            self.assertEqual(process.returncode, 0, stdout + stderr)
+            result = json.loads((self.root / "version-result.json").read_text())
+            self.assertEqual(result["text"], "4.5.1.synthetic\n",
+                             "Coordinator admission diagnostics corrupted parsed version stdout")
+            diagnostics = stderr + "\n".join(path.read_text() for path in self.root.glob("*.log"))
+            self.assertIn("godot-coordinator: waiting for", diagnostics,
+                          "Contention diagnostics were suppressed rather than retained")
+        finally:
+            if process is not None and process.poll() is None:
+                process.terminate()
+                try:
+                    process.communicate(timeout=2)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.communicate(timeout=2)
 
 
 

@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 1,
+  "status": "passed",
+  "modelSha256": "cbb427adb5946fdb6555c8cfde0f5e3d2f62f215803d59624e0f6da6f04c2789",
+  "mode": "headless",
+  "engine": {
+    "path": "/Users/tonyseing/.local/share/godot/4.5.1-stable/Godot.app/Contents/MacOS/Godot",
+    "sha256": "0d214c6c85e47e7060ac13b035b404ce4dda653992503914963e149a45cd0dca",
+    "version": "4.5.1.stable.official.f62fdbde1"
+  },
+  "facts": {
+    "animations": [],
+    "bounds": {
+      "end": [
+        0.28999999165535,
+        1.04799997806549,
+        0.365000009536743
+      ],
+      "position": [
+        -0.28999999165535,
+        0.0,
+        -0.365000009536743
+      ],
+      "size": [
+        0.579999983310699,
+        1.04799997806549,
+        0.730000019073486
+      ]
+    },
+    "engineVersion": {
+      "build": "official",
+      "hash": "f62fdbde15035c5576dad93e586201f4d41ef0cb",
+      "hex": 263425,
+      "major": 4,
+      "minor": 5,
+      "patch": 1,
+      "status": "stable",
+      "string": "4.5.1-stable (official)",
+      "timestamp": 0
+    },
+    "errors": [],
+    "materialCount": 1,
+    "materials": [
+      {
+        "albedo": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "class": "StandardMaterial3D",
+        "cullMode": 0,
+        "id": 0,
+        "metallic": 0.0,
+        "name": "wheelie_bin",
+        "roughness": 0.850000023841858,
+        "textures": [
+          {
+            "slot": "albedo_texture",
+            "texture": 0
+          }
+        ],
+        "transparency": 0
+      }
+    ],
+    "meshCount": 1,
+    "meshes": [
+      {
+        "blendShapes": 0,
+        "bounds": {
+          "position": [
+            -0.28999999165535,
+            0.0,
+            -0.365000009536743
+          ],
+          "size": [
+            0.579999983310699,
+            1.04799997806549,
+            0.730000019073486
+          ]
+        },
+        "name": "wheelie_bin",
+        "path": "/root/model/wheelie_bin",
+        "surfaces": [
+          {
+            "index": 0,
+            "indices": 1368,
+            "material": 0,
+            "normalVertices": 546,
+            "triangles": 456,
+            "uvVertices": 546,
+            "vertices": 546
+          }
+        ],
+        "triangles": 456,
+        "visible": true
+      }
+    ],
+    "skeletons": [],
+    "textureCount": 1,
+    "textures": [
+      {
+        "class": "CompressedTexture2D",
+        "height": 512,
+        "id": 0,
+        "path": "res://assets/model_wheelie_bin_atlas_512.png",
+        "width": 512
+      }
+    ],
+    "triangles": 456
+  },
+  "captures": [],
+  "runs": [
+    {
+      "command": [
+        "/Users/tonyseing/.local/share/godot/4.5.1-stable/Godot.app/Contents/MacOS/Godot",
+        "--headless",
+        "--version"
+      ],
+      "stdout": "/private/tmp/issue256-verifier8431383-phone-20261027a/run-4qg3csj5/version-stdout.log",
+      "stderr": "/private/tmp/issue256-verifier8431383-phone-20261027a/run-4qg3csj5/version-stderr.log",
+      "log": "/private/tmp/issue256-verifier8431383-phone-20261027a/run-4qg3csj5/version-engine.log",
+      "mode": "headless",
+      "project": "/private/tmp/issue256-verifier8431383-phone-20261027a/run-4qg3csj5/project",
+      "projectOwner": "coordinator",
+      "supervisorCommand": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/tonyseing/.local/share/godot-coordinator/c4f749453a3dcbe6240d2f3e3b9578070abac1f4613f711cf6c2291d0415f6d9/godot_coordinator.py",
+        "run",
+        "--mode",
+        "shared",
+        "--timeout",
+        "29.914895875001093",
+        "--purpose",
+        "img2godot version",
+        "--project",
+        "/private/tmp/issue256-verifier8431383-phone-20261027a/run-4qg3csj5/project",
+        "--",
+        "/Users/tonyseing/.local/share/godot/4.5.1-stable/Godot.app/Contents/MacOS/Godot",
+        "--headless",
+        "--version"
+      ],
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/Users/tonyseing/.local/share/godot/4.5.1-stable/Godot.app/Contents/MacOS/Godot",
+        "--headless",
+        "--path",
+        "/private/tmp/issue256-verifier8431383-phone-20261027a/run-4qg3csj5/project",
+        "--import",
+        "--log-file",
+        "/private/tmp/issue256-verifier8431383-phone-20261027a/run-4qg3csj5/import-engine.log"
+      ],
+      "stdout": "/private/tmp/issue256-verifier8431383-phone-20261027a/run-4qg3csj5/import-stdout.log",
+      "stderr": "/private/tmp/issue256-verifier8431383-phone-20261027a/run-4qg3csj5/import-stderr.log",
+      "log": "/private/tmp/issue256-verifier8431383-phone-20261027a/run-4qg3csj5/import-engine.log",
+      "mode": "headless",
+      "project": "/private/tmp/issue256-verifier8431383-phone-20261027a/run-4qg3csj5/project",
+      "projectOwner": "coordinator",
+      "supervisorCommand": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/tonyseing/.local/share/godot-coordinator/c4f749453a3dcbe6240d2f3e3b9578070abac1f4613f711cf6c2291d0415f6d9/godot_coordinator.py",
+        "run",
+        "--mode",
+        "shared",
+        "--timeout",
+        "179.92647962502087",
+        "--purpose",
+        "img2godot import",
+        "--project",
+        "/private/tmp/issue256-verifier8431383-phone-20261027a/run-4qg3csj5/project",
+        "--",
+        "/Users/tonyseing/.local/share/godot/4.5.1-stable/Godot.app/Contents/MacOS/Godot",
+        "--headless",
+        "--path",
+        "/private/tmp/issue256-verifier8431383-phone-20261027a/run-4qg3csj5/project",
+        "--import",
+        "--log-file",
+        "/private/tmp/issue256-verifier8431383-phone-20261027a/run-4qg3csj5/import-engine.log"
+      ],
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/Users/tonyseing/.local/share/godot/4.5.1-stable/Godot.app/Contents/MacOS/Godot",
+        "--headless",
+        "--path",
+        "/private/tmp/issue256-verifier8431383-phone-20261027a/run-4qg3csj5/project",
+        "--script",
+        "res://inspect_asset.gd",
+        "--log-file",
+        "/private/tmp/issue256-verifier8431383-phone-20261027a/run-4qg3csj5/inspect-engine.log"
+      ],
+      "stdout": "/private/tmp/issue256-verifier8431383-phone-20261027a/run-4qg3csj5/inspect-stdout.log",
+      "stderr": "/private/tmp/issue256-verifier8431383-phone-20261027a/run-4qg3csj5/inspect-stderr.log",
+      "log": "/private/tmp/issue256-verifier8431383-phone-20261027a/run-4qg3csj5/inspect-engine.log",
+      "mode": "headless",
+      "project": "/private/tmp/issue256-verifier8431383-phone-20261027a/run-4qg3csj5/project",
+      "projectOwner": "coordinator",
+      "supervisorCommand": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/tonyseing/.local/share/godot-coordinator/c4f749453a3dcbe6240d2f3e3b9578070abac1f4613f711cf6c2291d0415f6d9/godot_coordinator.py",
+        "run",
+        "--mode",
+        "shared",
+        "--timeout",
+        "179.9218034170044",
+        "--purpose",
+        "img2godot inspect",
+        "--project",
+        "/private/tmp/issue256-verifier8431383-phone-20261027a/run-4qg3csj5/project",
+        "--",
+        "/Users/tonyseing/.local/share/godot/4.5.1-stable/Godot.app/Contents/MacOS/Godot",
+        "--headless",
+        "--path",
+        "/private/tmp/issue256-verifier8431383-phone-20261027a/run-4qg3csj5/project",
+        "--script",
+        "res://inspect_asset.gd",
+        "--log-file",
+        "/private/tmp/issue256-verifier8431383-phone-20261027a/run-4qg3csj5/inspect-engine.log"
+      ],
+      "returncode": 0
+    }
+  ],
+  "errors": [],
+  "model": "/Users/tonyseing/orca/workspaces/chase3d/global-godot-coordination/asset-work/towns-edge/wheelie_bin/evaluation/wheelie_bin.glb",
+  "project": "/private/tmp/issue256-verifier8431383-phone-20261027a/run-4qg3csj5/project"
+}

@@ -1,0 +1,39 @@
+{
+  "archive": "2026-10-27-global-godot-coordination.patch1-native-evidence.tar.gz",
+  "sha256": "a0908b386930c4a544d4a312e9534afd39052af94bfdcee85095b47b6ce0ed9d",
+  "artifactDirectory": "issue256-verifier-native-cancel-8431383-20261027a-artifacts/",
+  "artifactFilesRelativeToDirectory": [
+    "before-status.json",
+    "final-cleanup-status.json",
+    "4.7.2-native-ready-status.json",
+    "4.7.2-survivor-ready-status.json",
+    "4.7.2-after-cancel-status.json",
+    "4.7.2-survivor-after-cancel-status.json",
+    "4.7.2-released-status.json",
+    "4.7.2-target-outer.log",
+    "4.7.2-survivor-outer.log",
+    "4.7.2-run/driver-config.json",
+    "4.7.2-run/driver-report.json",
+    "4.7.2-run/issue256-native-b_s89kl5-4.7.2-native-engine.log",
+    "4.7.2-run/issue256-native-b_s89kl5-4.7.2-native-stdout.log",
+    "4.7.2-run/issue256-native-b_s89kl5-4.7.2-native-stderr.log",
+    "4.5.1-native-ready-status.json",
+    "4.5.1-survivor-ready-status.json",
+    "4.5.1-after-cancel-status.json",
+    "4.5.1-survivor-after-cancel-status.json",
+    "4.5.1-released-status.json",
+    "4.5.1-target-outer.log",
+    "4.5.1-survivor-outer.log",
+    "4.5.1-run/driver-config.json",
+    "4.5.1-run/driver-report.json",
+    "4.5.1-run/issue256-native-b_s89kl5-4.5.1-native-engine.log",
+    "4.5.1-run/issue256-native-b_s89kl5-4.5.1-native-stdout.log",
+    "4.5.1-run/issue256-native-b_s89kl5-4.5.1-native-stderr.log"
+  ],
+  "additionalRootMembers": [
+    {"path": "issue256-verifier-native-cancel-8431383-20261027a.json", "sha256": "1d041a3e51369442dd876a124f2f7e0f564cf7b37965313843ada41a716980f2"},
+    {"path": "issue256-patch1-native-helper.py", "sha256": "01cec4d212c425c2cea6b8bead09f4cb40025917841b0b9c575957f0b1679cdc"}
+  ],
+  "regularFileCount": 28,
+  "scope": "Original bounded technical headless cancellation evidence; no model or image asset copies"
+}

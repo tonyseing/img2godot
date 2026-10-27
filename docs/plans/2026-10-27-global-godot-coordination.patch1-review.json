@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "issue": 256,
+  "review": "Read-only postrelease verifier supervision repair review",
+  "repository": "/Users/tonyseing/workspace/img2godot-deploy",
+  "identity": {
+    "verifySha256ProvidedByParent": "8431383b41c1497bf894938f6e26bedcd5ffa0f79b6679ae34f9755be175f789",
+    "runtimeCoreSha256ProvidedByParentUnchanged": "c4f749453a3dcbe6240d2f3e3b9578070abac1f4613f711cf6c2291d0415f6d9",
+    "initialTestSha256": "277113aa5a08ff1bcec55f9a721a4cd279039c72d7f44f17702d313f9a83ce18",
+    "updatedTestSha256ProvidedByParent": "371a6b4fd5c4a37084343893bf570dd38b98174d9b8c633ab77d160a1c0ecd52",
+    "runtimeReadmeSha256": "Parent supplied only prefix 330fd; full hash not independently available or recomputed in this review.",
+    "independentlyHashed": false,
+    "installed0720Changed": false,
+    "newImmutablePatchRelease": ".1 pending parent approval; no old tag move"
+  },
+  "findings": [],
+  "closure": [
+    {
+      "gap": "Raw Python project leaf can outlive verifier termination",
+      "status": "closed_in_reviewed_code",
+      "evidence": [
+        "forge/godot/verify.py:137-164 acquires only a rootless Python bridge and constructs canonical external CLI run with --project for the actual headless leaf.",
+        "forge/godot/verify.py:166-196 retains the actual supervisor Popen, forwards cancellation, and waits within the original deadline instead of directly killing native/group PIDs.",
+        "runtime/godot_coordinator.py:1441-1547 owns the leaf session, durable birth handshake, command completion and exception cleanup."
+      ]
+    },
+    {
+      "gap": "Killing a launcher group first can strand separately-sessioned native children",
+      "status": "closed_in_reviewed_code",
+      "evidence": [
+        "forge/godot/verify.py:157-164 omits --project for launcher=True; the launcher remains responsible for actual native project claims.",
+        "forge/godot/verify.py:167-172 launches the canonical supervisor without start_new_session, keeping it in the verifier's group where an outer canonical owner can recognize and protect a nested supervisor.",
+        "forge/godot/verify.py:174-196 sends through the retained direct Popen only; no verifier killpg or SIGKILL remains.",
+        "runtime/godot_coordinator.py:1277-1376 preserves owned-Popen authority, sends TERM, and withholds group escalation when nested owners/unknown cleanup remain protected."
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "contract": "Scoped cancellation and signal races",
+      "ranges": {"forge/godot/verify.py": [[119, 149], [173, 210]], "runtime/godot_coordinator.py": [[1770, 1818]]},
+      "observation": "Main-thread handlers record the first signal without raising. Cancellation during admission reaches the coordinator predicate and is translated to the received signal's exit code. A signal after the pre-spawn check is forwarded once the retained Popen exists. Prior handlers are restored in finally. Direct handle signaling does not grant authority over status/receipt PIDs. No additional concrete owned-family race defect was found in the reviewed code."
+    },
+    {
+      "contract": "Single original absolute deadline",
+      "ranges": {"forge/godot/verify.py": [[106, 110], [137, 164], [177, 196]], "runtime/godot_coordinator.py": [[991, 1001], [1453, 1477]]},
+      "observation": "The earliest own/inherited deadline is carried unchanged in GODOT_COORDINATOR_DEADLINE, alongside a remaining --timeout. Thus Python preparation or CLI startup cannot reset the original budget. Both polling and final bounded drain use the original D; there is no appended cleanup grace or supervisor KILL fallback."
+    },
+    {
+      "contract": "Unknown cleanup is not reported as success",
+      "ranges": {"forge/godot/verify.py": [[177, 196], [198, 217]], "runtime/godot_coordinator.py": [[1341, 1376], [1499, 1547]]},
+      "observation": "If the supervisor has not completed by D, the verifier raises 124 and explicitly directs the caller to retained-claim diagnostics. It does not claim that an unreaped supervisor or native family disappeared. Core cleanup retains unresolved claims and can veto KILL; no status PID is used as termination authority."
+    },
+    {
+      "contract": "Typed errors and ordinary exits",
+      "ranges": {"forge/godot/verify.py": [[95, 103], [198, 217], [431, 447]]},
+      "observation": "Direct coordinator API errors keep their exit code. CLI nonzero status is propagated, including ordinary 23 and timeout 124; negative process status is normalized to 128 + signal. A received verifier signal preserves the public signal classification. The accepted layering does not require an intermediate nested CLI to return 143 when its own deadline and cancellation race."
+    },
+    {
+      "contract": "Stdout, stderr, version parsing and capture evidence",
+      "ranges": {"forge/godot/verify.py": [[111, 117], [166, 172], [211, 240], [370, 397]]},
+      "observation": "Child stdout and CLI/child stderr are written separately and both paths are recorded. run() returns only stdout, so admission diagnostics cannot become the parsed version line. Both streams remain included in engine-error detection, native guard confirmation and capture log/provenance discovery. Canonical child status is checked before visual artifact acceptance."
+    }
+  ],
+  "documentationAssessment": {
+    "file": "runtime/README.md",
+    "ranges": [[76, 108], [110, 123]],
+    "newVerifierGuidance": "Accurately describes the rootless Python bridge, canonical project leaf/rootless launcher supervisor, scoped signal forwarding, original deadline, separate streams and ordinary exit propagation.",
+    "rawPythonExampleLimitation": "The generic with lease(...) plus subprocess.run(...) example at 76-81 is not a standalone SIGTERM-safe recipe: PID-directed default SIGTERM can terminate Python without unwinding the context or terminating its raw child. The surrounding existing prose explicitly says after-yield cancellation is caller-owned, contexts do not interrupt arbitrary bodies, and actual child handles must be retained for cleanup. Therefore the document does not promise automatic lease-managed SIGTERM cleanup, and this is not reported as an introduced verifier-code defect.",
+    "qualificationCommunicatedToParent": "Marking that generic example as normal-completion-only, or preferring canonical CLI ownership for actual leaves, would remove the specific ambiguity. No documentation change was made by this reviewer.",
+    "independentScoutAssessment": "Both scouts found no remaining verifier-code defect. One considered the copyable generic example unsafe despite its caveats; the other found the explicit caveats sufficient. The main review records the concrete example limitation without inventing an automatic-cleanup promise or elevating unchanged guidance into an introduced code finding."
+  },
+  "staticTestInspection": {
+    "file": "forge/tests/test_godot_pipeline.py",
+    "ranges": [[398, 455], [457, 644], [646, 705]],
+    "observedCoverage": [
+      "Actual verifier and canonical CLI with neutral technical leaf/launcher fixtures",
+      "TERM, INT and timeout paths",
+      "Rootless launcher plus exactly one actual project command claim",
+      "Actual owned family absence, unrelated survivor, drained launcher receipt, empty active/waiting state",
+      "Ordinary child exit23 propagation",
+      "Contended version output preserves exact stdout and retains admission diagnostics separately"
+    ],
+    "limitations": [
+      "These are neutral Python technical fixtures, not real Godot native proof.",
+      "Signal injection in the inspected family tests occurs after readiness; pre-spawn race reasoning in this review is static.",
+      "No tests were run by this reviewer."
+    ]
+  },
+  "parentEvidenceHistory": [
+    {
+      "job": "bg205",
+      "reportedResult": "Meaningful pre-repair context family checks: 2 failures, 19.68 seconds; actual verifier caller families leaked. No foreign signaling reported."
+    },
+    {
+      "job": "bg206",
+      "reportedResult": "Meaningful pre-repair launcher family checks: 2 failures, 6.53 seconds; actual verifier caller families leaked. No foreign signaling reported."
+    },
+    {
+      "job": "bg208",
+      "reportedResult": "Targeted 14 PASS in 13.143 seconds, covering context/launcher TERM/INT/timeout/nonzero/contended stdout."
+    },
+    {
+      "job": "bg209",
+      "testSha256": "277113aa5a08ff1bcec55f9a721a4cd279039c72d7f44f17702d313f9a83ce18",
+      "reportedResult": "Full 53-check suite had one actual failure: intermediate CLI exit was124 rather than the asserted143 during a D/TERM race. Family disappearance and drained receipt checks passed. This failure is retained as real evidence, not labeled a flake."
+    },
+    {
+      "change": "Parent-approved test-only correction",
+      "observation": "Only the exact intermediate drained['returncode'] == 143 assertion was removed. Strict consumer outer status, all owned family gone, unrelated survivor, active/waiting claims and drained receipt assertions remain. The verifier source stayed unchanged. The before/after source change was observed during this read-only review and confirmed by the parent."
+    },
+    {
+      "job": "bg210",
+      "testSha256": "371a6b4fd5c4a37084343893bf570dd38b98174d9b8c633ab77d160a1c0ecd52",
+      "reportedResult": "Updated full 53-check suite PASS in19.353 seconds."
+    },
+    {
+      "job": "bg211",
+      "reportedResult": "Actual native happy-path verification for both pins was running at the last parent update. No result or native approval inferred. Cancellation helper was not ready at that update."
+    }
+  ],
+  "activityAndLimits": {
+    "sourceReadsAndStaticTracingOnly": true,
+    "commandsRun": [],
+    "testsBuildsLintFormattersRun": [],
+    "enginesLaunched": [],
+    "sourceEdits": false,
+    "productionRegistryAccess": false,
+    "gitOrInstallMutations": false,
+    "evidenceArtifactOnly": "local://issue256-verifier-supervision-review.json",
+    "parentTestReportsIndependentlyRerun": false,
+    "nativeFullReleaseInstallApproval": false,
+    "scope": "Only the changed verifier supervision flow, its consumers/cleanup boundaries, relevant test source, and runtime README guidance were reviewed. No fresh full-core audit or release approval."
+  },
+  "overall_correctness": "correct",
+  "explanation": "The reviewed verifier repair closes both demonstrated owned-family supervision gaps without an additional actionable code defect found. Deadline, retained-claim failure behavior, typed exits and stream separation are coherent. This is bounded static source review; native cancellation proof and immutable patch release/install approval remain parent-owned.",
+  "confidence": 0.96
+}
